@@ -97,7 +97,7 @@
 <canvas id="galaxy"></canvas>
 
 <audio id="musica" preload="auto" loop>
-  <source src="https://raw.githubusercontent.com/rafaelcastrocouto/soy-luna/master/eres.mp3" type="audio/mpeg">
+  <source src="soy_luna_eres.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -112,10 +112,15 @@ document.getElementById('btn-entrar').addEventListener('click', () => {
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   if (isMobile) document.getElementById('hint').style.display = 'block';
 
-  // --- CORRECCIÓN AQUÍ ---
-  const a = document.getElementById('musica');
-  if (a) {
-    a.play().catch(e => console.error("Error al reproducir:", e));
+  // --- REPRODUCCIÓN FORZADA ---
+  const musica = document.getElementById('musica');
+  if (musica) {
+    musica.volume = 1.0; // Aseguramos volumen al máximo
+    musica.play().then(() => {
+      console.log("Reproduciendo...");
+    }).catch(error => {
+      console.error("Fallo la reproducción:", error);
+    });
   }
 });
 </script>
