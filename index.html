@@ -103,8 +103,9 @@
 <script>
 document.getElementById('btn-entrar').addEventListener('click', () => {
   const m = document.getElementById('modal');
+  const sonido = document.getElementById('musica');
+
   m.classList.add('oculto');
-  
   setTimeout(() => m.style.display = 'none', 1000);
   
   document.getElementById('top-text').style.display = 'block';
@@ -112,29 +113,21 @@ document.getElementById('btn-entrar').addEventListener('click', () => {
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   if (isMobile) document.getElementById('hint').style.display = 'block';
 
-  // --- LÓGICA COMPATIBLE CON IPHONE/ANDROID/CHROME ---
-  const sonido = document.getElementById('musica');
-  
-  // 1. Intentamos cargar el archivo explícitamente
-  sonido.load();
-  
-  // 2. Bajamos un poquito el volumen por si el sistema lo bloquea por saturación
-  sonido.volume = 1.0;
-
-  // 3. Promesa de reproducción (Obligatorio para navegadores modernos)
-  const playPromise = sonido.play();
-
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      console.log("Audio iniciado correctamente");
-    }).catch(error => {
-      console.log("Error de reproducción: ", error);
-      // Si falla (por ejemplo en iPhone), intentamos un segundo play al mover la pantalla
-      window.addEventListener('touchstart', () => {
-        sonido.play();
-      }, { once: true });
-    });
-  }
+  // --- REFUERZO DE AUDIO ---
+  // Forzamos la carga y reproducción
+  sonido.play().then(() => {
+    console.log("Reproducción iniciada");
+  }).catch(error => {
+    console.log("El navegador bloqueó el inicio automático, reintentando al tocar...");
+    // Esto es vital para iPhone/Safari
+    const reproducirForzado = () => {
+      sonido.play();
+      window.removeEventListener('touchstart', reproducirForzado);
+      window.removeEventListener('click', reproducirForzado);
+    };
+    window.addEventListener('touchstart', reproducirForzado);
+    window.addEventListener('click', reproducirForzado);
+  });
 });
 
 </script>
