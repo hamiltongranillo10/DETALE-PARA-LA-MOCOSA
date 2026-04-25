@@ -96,29 +96,53 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio controls>
+<audio id="musica" loop style="display:none;">
   <source src="soy_luna_eres.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-document.getElementById('btn-entrar').addEventListener('click',()=>{
-  const m=document.getElementById('modal');
-  m.classList.add('oculto');
-  setTimeout(()=>m.style.display='none',1000);
-  document.getElementById('top-text').style.display='block';
-  const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  if(isMobile)document.getElementById('hint').style.display='block';
-  const a=document.getElementById('musica');a.currentTime = 0;a.play().catch(()=>{});
-});
-</script>
+const btn = document.getElementById('btn-entrar');
+
+if(btn){
+  btn.addEventListener('click', () => {
+
+    const m = document.getElementById('modal');
+    if(m){
+      m.classList.add('oculto');
+      setTimeout(() => m.style.display = 'none', 1000);
+    }
+
+    const topText = document.getElementById('top-text');
+    if(topText) topText.style.display = 'block';
+
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    const hint = document.getElementById('hint');
+    if(isMobile && hint) hint.style.display = 'block';
+
+    // 🔊 AUDIO SEGURO
+    const a = document.getElementById('musica');
+    if(a){
+      a.currentTime = 0;
+
+      const playPromise = a.play();
+      if(playPromise !== undefined){
+        playPromise.catch(err => {
+          console.log("Error al reproducir audio:", err);
+        });
+      }
+    }
+
+  });
+}
 
 <script type="importmap">
-{"imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
+{
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
 </script>
-
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
