@@ -96,21 +96,49 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio id="musica" loop style="display:none;">
+<audio id="musica" loop preload="auto" playsinline>
   <source src="musica-luna.mp3" type="audio/mpeg">
+  <source src="musica-luna.ogg" type="audio/ogg">
 </audio>
 
 <script>
-document.getElementById('btn-entrar').addEventListener('click',()=>{
-  const m=document.getElementById('modal');
+const btn = document.getElementById('btn-entrar');
+
+btn.addEventListener('click', () => {
+
+  const m = document.getElementById('modal');
   m.classList.add('oculto');
-  setTimeout(()=>m.style.display='none',1000);
-  document.getElementById('top-text').style.display='block';
-  const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  if(isMobile)document.getElementById('hint').style.display='block';
-  const a=document.getElementById('musica');a.currentTime = 0;a.play().catch(()=>{});
+  setTimeout(() => m.style.display = 'none', 1000);
+
+  document.getElementById('top-text').style.display = 'block';
+
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(isMobile) document.getElementById('hint').style.display = 'block';
+
+  const audio = document.getElementById('musica');
+
+  audio.muted = false;
+  audio.volume = 1;
+  audio.currentTime = 0;
+
+  const playPromise = audio.play();
+
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        console.log("✅ Música reproduciéndose");
+      })
+      .catch(error => {
+        console.log("❌ Error de audio:", error);
+
+        document.body.addEventListener('click', () => {
+          audio.play();
+        }, { once: true });
+      });
+  }
+
 });
-</script>
+  
 
 <script type="importmap">
 {"imports":{
