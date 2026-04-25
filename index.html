@@ -97,7 +97,7 @@
 <canvas id="galaxy"></canvas>
 
 <audio id="musica" loop style="display:none;">
-  <source src="soy_luna_eres.mp3" type="audio/mpeg">
+  <source src="./soy_luna_eres.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -119,11 +119,10 @@ if(btn){
     const hint = document.getElementById('hint');
     if(isMobile && hint) hint.style.display = 'block';
 
-    // 🔊 AUDIO SEGURO
+    // 🔊 AUDIO
     const a = document.getElementById('musica');
     if(a){
       a.currentTime = 0;
-
       const playPromise = a.play();
       if(playPromise !== undefined){
         playPromise.catch(err => {
@@ -134,6 +133,7 @@ if(btn){
 
   });
 }
+</script>
 
 <script type="importmap">
 {
@@ -143,6 +143,8 @@ if(btn){
   }
 }
 </script>
+
+<!-- ✅ SOLO UN SCRIPT MODULE -->
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
