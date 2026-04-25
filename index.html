@@ -96,19 +96,27 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio controls>
+<audio id="musica" loop>
   <source src="soy_luna_eres.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-document.getElementById('btn-entrar').addEventListener('click',()=>{
-  const m=document.getElementById('modal');
+document.getElementById('btn-entrar').addEventListener('click', () => {
+  const m = document.getElementById('modal');
   m.classList.add('oculto');
-  setTimeout(()=>m.style.display='none',1000);
-  document.getElementById('top-text').style.display='block';
-  const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  if(isMobile)document.getElementById('hint').style.display='block';
-  const a=document.getElementById('musica');a.currentTime = 0;a.play().catch(()=>{});
+  
+  setTimeout(() => m.style.display = 'none', 1000);
+  
+  document.getElementById('top-text').style.display = 'block';
+  
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) document.getElementById('hint').style.display = 'block';
+
+  // --- CORRECCIÓN AQUÍ ---
+  const a = document.getElementById('musica');
+  if (a) {
+    a.play().catch(e => console.error("Error al reproducir:", e));
+  }
 });
 </script>
 
