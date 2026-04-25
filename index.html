@@ -96,9 +96,7 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio id="musica" preload="auto" loop>
-  <source src="soy_luna_eres.mp3" type="audio/mpeg">
-</audio>
+<audio id="musica" src="soy_luna_eres.mp3" preload="auto" loop></audio>
 
 <script>
 document.getElementById('btn-entrar').addEventListener('click', () => {
@@ -112,14 +110,12 @@ document.getElementById('btn-entrar').addEventListener('click', () => {
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   if (isMobile) document.getElementById('hint').style.display = 'block';
 
-  // --- REPRODUCCIÓN FORZADA ---
+  // --- SOLUCIÓN DEFINITIVA ---
   const musica = document.getElementById('musica');
   if (musica) {
-    musica.volume = 1.0; // Aseguramos volumen al máximo
-    musica.play().then(() => {
-      console.log("Reproduciendo...");
-    }).catch(error => {
-      console.error("Fallo la reproducción:", error);
+    musica.load(); // Fuerza al navegador a buscar el archivo de nuevo
+    musica.play().catch(e => {
+      console.log("El navegador bloqueó el audio o no encontró el archivo:", e);
     });
   }
 });
