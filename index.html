@@ -96,7 +96,9 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio id="musica" src="soy_luna_eres.mp3" preload="auto" loop></audio>
+<audio id="musica" loop playsinline>
+  <source src="soy_luna_eres.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 document.getElementById('btn-entrar').addEventListener('click', () => {
@@ -110,15 +112,31 @@ document.getElementById('btn-entrar').addEventListener('click', () => {
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   if (isMobile) document.getElementById('hint').style.display = 'block';
 
-  // --- SOLUCIÓN DEFINITIVA ---
-  const musica = document.getElementById('musica');
-  if (musica) {
-    musica.load(); // Fuerza al navegador a buscar el archivo de nuevo
-    musica.play().catch(e => {
-      console.log("El navegador bloqueó el audio o no encontró el archivo:", e);
+  // --- LÓGICA COMPATIBLE CON IPHONE/ANDROID/CHROME ---
+  const sonido = document.getElementById('musica');
+  
+  // 1. Intentamos cargar el archivo explícitamente
+  sonido.load();
+  
+  // 2. Bajamos un poquito el volumen por si el sistema lo bloquea por saturación
+  sonido.volume = 1.0;
+
+  // 3. Promesa de reproducción (Obligatorio para navegadores modernos)
+  const playPromise = sonido.play();
+
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      console.log("Audio iniciado correctamente");
+    }).catch(error => {
+      console.log("Error de reproducción: ", error);
+      // Si falla (por ejemplo en iPhone), intentamos un segundo play al mover la pantalla
+      window.addEventListener('touchstart', () => {
+        sonido.play();
+      }, { once: true });
     });
   }
 });
+
 </script>
 
 <script type="importmap">
