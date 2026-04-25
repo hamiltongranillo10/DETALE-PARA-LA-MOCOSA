@@ -96,16 +96,15 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio id="musica" loop playsinline>
+<audio id="musica" loop playsinline preload="auto">
   <source src="soy_luna_eres.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 document.getElementById('btn-entrar').addEventListener('click', () => {
   const m = document.getElementById('modal');
-  const sonido = document.getElementById('musica');
-
   m.classList.add('oculto');
+  
   setTimeout(() => m.style.display = 'none', 1000);
   
   document.getElementById('top-text').style.display = 'block';
@@ -113,23 +112,30 @@ document.getElementById('btn-entrar').addEventListener('click', () => {
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
   if (isMobile) document.getElementById('hint').style.display = 'block';
 
-  // --- REFUERZO DE AUDIO ---
-  // Forzamos la carga y reproducción
+  // --- LÓGICA REVISADA CON PLAN B DE YOUTUBE ---
+  const sonido = document.getElementById('musica');
+  
+  sonido.load();
+  sonido.volume = 1.0;
+
+  // 3. Promesa de reproducción con "Plan B"
   sonido.play().then(() => {
-    console.log("Reproducción iniciada");
+      console.log("Audio iniciado correctamente");
   }).catch(error => {
-    console.log("El navegador bloqueó el inicio automático, reintentando al tocar...");
-    // Esto es vital para iPhone/Safari
-    const reproducirForzado = () => {
-      sonido.play();
-      window.removeEventListener('touchstart', reproducirForzado);
-      window.removeEventListener('click', reproducirForzado);
-    };
-    window.addEventListener('touchstart', reproducirForzado);
-    window.addEventListener('click', reproducirForzado);
+      console.log("Error de reproducción: ", error);
+      
+      // Si el audio falla (archivo no encontrado o bloqueo), mostramos el link de YouTube
+      const topText = document.getElementById('top-text');
+      topText.innerHTML = `Tu música no cargó, <a href="https://youtu.be/heYaNk7UAC8?si=C0HhKtgHjMkiVrte" target="_blank" style="color: #FFB8D8; text-decoration: underline;">toca aquí para escucharla</a> mientras ves tu galaxia ♡`;
+      topText.style.display = 'block';
+      topText.style.pointerEvents = 'auto'; 
+
+      // Reintento para móviles si solo fue un bloqueo de click
+      window.addEventListener('touchstart', () => {
+        sonido.play();
+      }, { once: true });
   });
 });
-
 </script>
 
 <script type="importmap">
