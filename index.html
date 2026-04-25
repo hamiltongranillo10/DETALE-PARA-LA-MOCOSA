@@ -96,35 +96,34 @@
 <div id="hint"></div>
 <canvas id="galaxy"></canvas>
 
-<audio controls>
-  <source src="soy_luna_eres.mp3" type="audio/mpeg">
+<audio id="musica" loop preload="auto" playsinline>
+  <source src="musica-luna.mp3" type="audio/mpeg">
+  <source src="musica-luna.ogg" type="audio/ogg">
 </audio>
 
 <script>
-document.getElementById('btn-entrar').addEventListener('click',()=>{
-  const m=document.getElementById('modal');
+document.getElementById('btn-entrar').addEventListener('click', () => {
+  const m = document.getElementById('modal');
   m.classList.add('oculto');
-  setTimeout(()=>m.style.display='none',1000);
-  document.getElementById('top-text').style.display='block';
-  const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  if(isMobile)document.getElementById('hint').style.display='block';
-  const a=document.getElementById('musica');a.currentTime = 0;a.play().catch(()=>{});
+  setTimeout(() => m.style.display = 'none', 1000);
+
+  document.getElementById('top-text').style.display = 'block';
+
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) document.getElementById('hint').style.display = 'block';
+
+  const a = document.getElementById('musica');
+  a.currentTime = 0;
+  a.play().catch(() => {});
 });
 </script>
 
-<script type="importmap">
-{"imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
-</script>
-
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
