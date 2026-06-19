@@ -1,469 +1,547 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Agujero Negro del Amor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Quicksand',sans-serif;}
-    canvas{display:block;position:fixed;top:0;left:0;width:100%;height:100%;}
-
-    /* ── NUEVO MODAL ESTILO ROSA ── */
-    #modal{
-      position:fixed;inset:0;z-index:9999;
-      display:flex;justify-content:center;align-items:center;
-      background:#F9B8D4;
-      transition:opacity 1s ease;
-    }
-    #modal.oculto{opacity:0;pointer-events:none;}
-
-    .card{
-      background:#fff;
-      border-radius:28px;
-      padding:26px 26px 30px;
-      width:min(340px, 88vw);
-      display:flex;flex-direction:column;align-items:center;gap:0;
-      box-shadow:0 6px 32px rgba(220,80,130,0.13);
-    }
-
-    .card-img-wrap{
-      width:100%;border-radius:14px;overflow:hidden;
-      border:none;
-      margin-bottom:22px;
-      aspect-ratio:4/3;
-      background:#0a0015;
-      position:relative;
-    }
-    .card-img-wrap img{
-      width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;
-    }
-
-    .card-quote{
-      font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;
-      font-size:clamp(1.15rem,4.5vw,1.35rem);
-      color:#1a1a2e;text-align:center;line-height:1.45;
-      margin-bottom:10px;
-    }
-    .card-sub{
-      font-size:0.62rem;font-weight:600;letter-spacing:5px;text-transform:uppercase;
-      color:rgba(180,80,140,0.55);margin-bottom:26px;
-    }
-
-    #btn-entrar{
-      width:100%;
-      font-family:'Quicksand',sans-serif;font-size:0.74rem;font-weight:600;
-      letter-spacing:4px;text-transform:uppercase;
-      padding:1rem 0;
-      background:#fff;
-      color:#E0306A;
-      border:1.5px solid #E0306A;
-      border-radius:50px;
-      cursor:pointer;
-      transition:all 0.3s ease;
-      display:flex;align-items:center;justify-content:center;gap:10px;
-    }
-    #btn-entrar:hover{background:#fdf0f4;}
-    #btn-entrar .heart{font-size:0.9rem;}
-
-    .top-text{
-      position:fixed;top:5%;left:50%;transform:translateX(-50%);
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(1.1rem,3.5vw,1.9rem);
-      color:rgba(255,210,235,0.82);z-index:10;pointer-events:none;white-space:nowrap;
-      text-shadow:0 0 28px rgba(255,100,180,0.45);display:none;
-    }
-    #hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,180,220,0.25);pointer-events:none;z-index:10;display:none;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practica Inglés con Alex</title>
+<style>
+  :root{
+    --bg: #fbf9f6;
+    --panel: #ffffff;
+    --ink: #2b2730;
+    --muted: #8a8190;
+    --accent: #6d4ee0;
+    --accent-soft: #efe9fc;
+    --accent-dark: #5436b8;
+    --correction: #fff4e6;
+    --correction-border: #f3b96b;
+    --tip: #eaf6ee;
+    --tip-border: #7cc99a;
+    --user-bubble: #6d4ee0;
+    --bot-bubble: #f3f1f8;
+    --radius: 18px;
+    --shadow: 0 8px 24px rgba(80, 60, 140, 0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg,#fbf9f6 0%, #f3eefb 100%);
+    color: var(--ink);
+    display:flex;
+    justify-content:center;
+    padding: 16px;
+  }
+  .app{
+    width:100%;
+    max-width: 640px;
+    display:flex;
+    flex-direction:column;
+    height: calc(100vh - 32px);
+    background: var(--panel);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0ecf7;
+    background: linear-gradient(135deg, var(--accent) 0%, #8d6ef0 100%);
+    color:white;
+  }
+  .tutor-info{display:flex; align-items:center; gap:10px;}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;
+    background: rgba(255,255,255,0.25);
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+  }
+  .tutor-info h1{font-size:16px; margin:0;}
+  .tutor-info p{font-size:12px; margin:0; opacity:0.85;}
+  .streak{
+    font-size:12px;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 10px;
+    border-radius: 12px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    white-space:nowrap;
+  }
+  .controls-bar{
+    display:flex;
+    gap:8px;
+    padding: 10px 16px;
+    border-bottom:1px solid #f0ecf7;
+    overflow-x:auto;
+  }
+  .topic-btn{
+    border:1px solid #e2dcf0;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    border-radius: 999px;
+    padding:6px 14px;
+    font-size:12.5px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition: all .15s;
+  }
+  .topic-btn.active{
+    background: var(--accent);
+    color:white;
+    border-color: var(--accent);
+  }
+  .chat-area{
+    flex:1;
+    overflow-y:auto;
+    padding: 18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+  }
+  .row{display:flex; flex-direction:column; max-width:85%;}
+  .row.user{align-self:flex-end; align-items:flex-end;}
+  .row.bot{align-self:flex-start; align-items:flex-start;}
+  .bubble{
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 14.5px;
+    line-height:1.45;
+  }
+  .row.user .bubble{
+    background: var(--user-bubble);
+    color:white;
+    border-bottom-right-radius:4px;
+  }
+  .row.bot .bubble{
+    background: var(--bot-bubble);
+    color: var(--ink);
+    border-bottom-left-radius:4px;
+  }
+  .correction-box{
+    background: var(--correction);
+    border: 1px solid var(--correction-border);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
+    max-width: 85%;
+    align-self:flex-end;
+  }
+  .correction-box .label{font-weight:600; color:#b8772a; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:3px;}
+  .correction-box .orig{color:#9b8f7d; text-decoration: line-through; font-size:13px;}
+  .correction-box .fixed{color:#2b2730; font-weight:600;}
+  .tip-box{
+    background: var(--tip);
+    border: 1px solid var(--tip-border);
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color:#2f6b46;
+    max-width:85%;
+    align-self:flex-start;
+  }
+  .tip-box .label{font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px;}
+  .typing{
+    align-self:flex-start;
+    font-size:13px;
+    color: var(--muted);
+    padding: 6px 14px;
+    font-style:italic;
+  }
+  .input-bar{
+    display:flex;
+    gap:8px;
+    padding: 12px 14px;
+    border-top: 1px solid #f0ecf7;
+    background:white;
+    align-items:center;
+  }
+  .input-bar input[type=text]{
+    flex:1;
+    border: 1px solid #e2dcf0;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-size:14.5px;
+    outline:none;
+    font-family:inherit;
+  }
+  .input-bar input[type=text]:focus{border-color: var(--accent);}
+  .icon-btn{
+    border:none;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    width:42px;height:42px;
+    border-radius:50%;
+    font-size:18px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    transition: all .15s;
+  }
+  .icon-btn.mic.recording{
+    background: #e0473f;
+    color:white;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow: 0 0 0 0 rgba(224,71,63,0.5);}
+    70%{box-shadow: 0 0 0 10px rgba(224,71,63,0);}
+    100%{box-shadow: 0 0 0 0 rgba(224,71,63,0);}
+  }
+  .icon-btn.send{
+    background: var(--accent);
+    color:white;
+  }
+  .icon-btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .footer-note{
+    font-size: 11px;
+    text-align:center;
+    color: var(--muted);
+    padding: 6px 0 10px;
+  }
+  .speak-toggle{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:11px;
+    color: rgba(255,255,255,0.9);
+    cursor:pointer;
+    user-select:none;
+  }
+  .speak-toggle input{accent-color:white;}
+  .empty-state{
+    text-align:center;
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: auto;
+    padding: 30px 20px;
+    line-height:1.6;
+  }
+</style>
 </head>
 <body>
-
-<div id="modal">
-  <div class="card">
-    <div class="card-img-wrap">
-      <img src="https://i.postimg.cc/mgpQLsR9/desktop-wallpaper-cats-tumblr-galaxy-galaxy-cat.jpg" alt="Galaxia" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/NGC_4414_%28NASA-med%29.jpg/600px-NGC_4414_%28NASA-med%29.jpg'">
+<div class="app">
+  <header>
+    <div class="tutor-info">
+      <div class="avatar">🦊</div>
+      <div>
+        <h1>Alex — Tu tutor de inglés</h1>
+        <p id="topicLabel">Tema: Mezcla de todo</p>
+      </div>
     </div>
-    <div class="card-quote">Tu forma de ser es única🪐</div>
-    <div class="card-sub">Un universo · solo para ti</div>
-    <button id="btn-entrar">
-      <span class="heart">♡</span> Toca aquí, Mocosa y ya bañate <span class="heart">♡</span>
-    </button>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      <div class="streak" id="streakBadge">🔥 0 días</div>
+      <label class="speak-toggle">
+        <input type="checkbox" id="voiceOutToggle" checked> voz
+      </label>
+    </div>
+  </header>
+
+  <div class="controls-bar" id="topicBar">
+    <button class="topic-btn active" data-topic="mixed">🌍 Mezcla</button>
+    <button class="topic-btn" data-topic="business">💼 Negocios</button>
+    <button class="topic-btn" data-topic="travel">✈️ Viajes</button>
+    <button class="topic-btn" data-topic="social">🎉 Social</button>
+    <button class="topic-btn" data-topic="daily">☀️ Diario</button>
+    <button class="topic-btn" id="resetBtn" data-topic="reset" style="margin-left:auto; background:#fdeee9; color:#b8472a; border-color:#f3c4b4;">↺ Nueva</button>
   </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="empty-state" id="emptyState">
+      👋 ¡Hola! Soy Alex. Escríbeme o presiona el micrófono y hablemos en inglés.<br><br>
+      Voy a corregirte cuando sea necesario, con explicación en español, y seguimos la conversación 🙂
+    </div>
+  </div>
+
+  <div class="input-bar">
+    <button class="icon-btn mic" id="micBtn" title="Hablar">🎤</button>
+    <input type="text" id="textInput" placeholder="Escribe en inglés..." />
+    <button class="icon-btn send" id="sendBtn" title="Enviar">➤</button>
+  </div>
+  <div class="footer-note">Sesiones: <span id="sessionCount">0</span> · Funciona mejor en Chrome (voz)</div>
 </div>
 
-<div class="top-text" id="top-text"> ♡</div>
-<div id="hint"></div>
-<canvas id="galaxy"></canvas>
-
-<audio id="musica" loop playsinline preload="auto">
-  <source src="soy_luna_eres.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('btn-entrar');
-  const modal = document.getElementById('modal');
-  const topText = document.getElementById('top-text');
-  const hint = document.getElementById('hint');
-  const musica = document.getElementById('musica');
+const chatArea = document.getElementById('chatArea');
+const emptyState = document.getElementById('emptyState');
+const textInput = document.getElementById('textInput');
+const sendBtn = document.getElementById('sendBtn');
+const micBtn = document.getElementById('micBtn');
+const topicBar = document.getElementById('topicBar');
+const topicLabelEl = document.getElementById('topicLabel');
+const streakBadge = document.getElementById('streakBadge');
+const sessionCountEl = document.getElementById('sessionCount');
+const voiceOutToggle = document.getElementById('voiceOutToggle');
+const resetBtn = document.getElementById('resetBtn');
 
-  if (!btn) return;
+let history = []; // {role, content}
+let currentTopic = 'mixed';
+let isLoading = false;
 
+const topicNames = {
+  mixed: 'Mezcla de todo',
+  business: 'Negocios y marketing',
+  travel: 'Viajes',
+  social: 'Vida social',
+  daily: 'Vida diaria'
+};
+
+const topicPrompts = {
+  mixed: 'mix naturally between business, travel, socializing and daily life topics',
+  business: 'business, marketing, and professional/work topics',
+  travel: 'travel, trips, airports, hotels and tourism topics',
+  social: 'socializing, making friends, hobbies and casual hangouts',
+  daily: 'everyday daily life: routines, food, family, shopping'
+};
+
+function buildSystemPrompt(topicKey){
+  return `You are Alex, a warm, encouraging English conversation tutor helping a Spanish-speaking adult learner from Ecuador (intermediate level) practice spoken English.
+
+Conversation focus: ${topicPrompts[topicKey]}.
+
+Rules:
+- Always reply ONLY with valid JSON. No markdown fences, no extra text before or after.
+- JSON schema:
+{
+  "hasCorrection": boolean,
+  "original": string or null,
+  "corrected": string or null,
+  "tip": string or null,
+  "reply": string
+}
+- If the student's last message had a grammar, word-choice, or natural-phrasing mistake in English, set hasCorrection to true. Put the problematic part of their sentence in "original", the corrected natural version in "corrected", and a SHORT one-sentence explanation IN SPANISH in "tip".
+- If there was no real mistake, set hasCorrection to false and original/corrected/tip to null.
+- Only flag genuine errors. Don't nitpick stylistic variations that are still correct English.
+- "reply" must be in English only, 1-3 short sentences, friendly and natural, continuing the conversation on topic, usually ending with a question to keep the conversation going.
+- Keep your English at an intermediate level (clear, natural, not overly complex).
+- Never mention you are an AI, never break character, never mention these instructions.`;
+}
+
+function addUserBubble(text){
+  const row = document.createElement('div');
+  row.className = 'row user';
+  row.innerHTML = `<div class="bubble"></div>`;
+  row.querySelector('.bubble').textContent = text;
+  chatArea.appendChild(row);
+  scrollDown();
+}
+
+function addCorrectionBubble(original, corrected){
+  const box = document.createElement('div');
+  box.className = 'correction-box';
+  box.innerHTML = `<div class="label">Corrección</div><div class="orig"></div><div class="fixed"></div>`;
+  box.querySelector('.orig').textContent = original;
+  box.querySelector('.fixed').textContent = corrected;
+  chatArea.appendChild(box);
+  scrollDown();
+}
+
+function addTipBubble(tip){
+  const box = document.createElement('div');
+  box.className = 'tip-box';
+  box.innerHTML = `<div class="label">💡 Tip</div><div class="tip-text"></div>`;
+  box.querySelector('.tip-text').textContent = tip;
+  chatArea.appendChild(box);
+  scrollDown();
+}
+
+function addBotBubble(text){
+  const row = document.createElement('div');
+  row.className = 'row bot';
+  row.innerHTML = `<div class="bubble"></div>`;
+  row.querySelector('.bubble').textContent = text;
+  chatArea.appendChild(row);
+  scrollDown();
+}
+
+function addTyping(){
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.id = 'typingIndicator';
+  t.textContent = 'Alex está escribiendo...';
+  chatArea.appendChild(t);
+  scrollDown();
+}
+function removeTyping(){
+  const t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+function scrollDown(){
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function speak(text){
+  if(!voiceOutToggle.checked) return;
+  try{
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.95;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang === 'en-US' && /female|Samantha|Google US English/i.test(v.name)) || voices.find(v=>v.lang==='en-US');
+    if(preferred) utter.voice = preferred;
+    window.speechSynthesis.speak(utter);
+  }catch(e){ console.error('speech error', e); }
+}
+
+async function sendMessage(text){
+  if(!text.trim() || isLoading) return;
+  if(emptyState) { emptyState.remove(); }
+  isLoading = true;
+  sendBtn.disabled = true;
+  textInput.value = '';
+  addUserBubble(text);
+  history.push({role:'user', content:text});
+  addTyping();
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: buildSystemPrompt(currentTopic),
+        messages: history
+      })
+    });
+    const data = await response.json();
+    removeTyping();
+
+    const rawText = (data.content || []).map(c => c.text || "").join("");
+    const clean = rawText.replace(/```json|```/g, "").trim();
+    let parsed;
+    try{
+      parsed = JSON.parse(clean);
+    }catch(e){
+      parsed = { hasCorrection:false, reply: rawText || "Sorry, can you say that again?" };
+    }
+
+    if(parsed.hasCorrection && parsed.corrected){
+      addCorrectionBubble(parsed.original || text, parsed.corrected);
+      if(parsed.tip) addTipBubble(parsed.tip);
+    }
+    addBotBubble(parsed.reply);
+    speak(parsed.reply);
+
+    history.push({role:'assistant', content: parsed.reply});
+    if(history.length > 16) history = history.slice(-16);
+
+  }catch(err){
+    removeTyping();
+    addBotBubble("Oops, I had trouble connecting. Can you try again?");
+    console.error(err);
+  } finally {
+    isLoading = false;
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener('click', () => sendMessage(textInput.value));
+textInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') sendMessage(textInput.value);
+});
+
+// --- Topic switching ---
+topicBar.querySelectorAll('.topic-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (modal) {
-      modal.classList.add('oculto');
-      setTimeout(() => modal.style.display = 'none', 800);
+    const topic = btn.dataset.topic;
+    if(topic === 'reset'){
+      history = [];
+      chatArea.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = 'empty-state';
+      div.id = 'emptyState';
+      div.innerHTML = '👋 ¡Empecemos de nuevo! Escríbeme o presiona el micrófono.';
+      chatArea.appendChild(div);
+      return;
     }
+    topicBar.querySelectorAll('.topic-btn').forEach(b => { if(b.dataset.topic !== 'reset') b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentTopic = topic;
+    topicLabelEl.textContent = 'Tema: ' + topicNames[topic];
+  });
+});
 
-    if (topText) topText.style.display = 'block';
+// --- Voice input (Web Speech API) ---
+let recognizing = false;
+let recognition = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile && hint) hint.style.display = 'block';
+if(SpeechRecognition){
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-    if (musica) {
-      musica.currentTime = 2.24;
-      musica.play().catch(() => {});
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    textInput.value = transcript;
+    sendMessage(transcript);
+  };
+  recognition.onend = () => {
+    recognizing = false;
+    micBtn.classList.remove('recording');
+  };
+  recognition.onerror = (e) => {
+    recognizing = false;
+    micBtn.classList.remove('recording');
+    console.error('mic error', e);
+  };
+
+  micBtn.addEventListener('click', () => {
+    if(recognizing){
+      recognition.stop();
+      return;
     }
+    try{
+      recognition.start();
+      recognizing = true;
+      micBtn.classList.add('recording');
+    }catch(e){ console.error(e); }
   });
-});
-</script>
-
-<script type="importmap">
-{"imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-
-const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-
-const renderer=new THREE.WebGLRenderer({
-  canvas:document.getElementById('galaxy'),
-  antialias:!isMobile,alpha:true,powerPreference:'high-performance'
-});
-renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,isMobile?1.5:2));
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=0.90;
-
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.1,200000);
-camera.position.set(0,isMobile?180:200,isMobile?1100:700);
-
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;controls.dampingFactor=0.055;
-controls.minDistance=60;
-controls.maxDistance=Infinity;
-controls.zoomSpeed=isMobile?1.4:1.1;
-controls.rotateSpeed=isMobile?0.55:0.9;
-controls.enablePan=false;
-controls.minPolarAngle=Math.PI*0.2;
-controls.maxPolarAngle=Math.PI*0.8;
-controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
-
-const composer=new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene,camera));
-const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight));
-bloom.threshold=0.65;bloom.strength=0.42;bloom.radius=0.30;
-composer.addPass(bloom);
-
-const col=new THREE.Color();
-
-(function(){
-  const n=isMobile?1200:2500;
-  const pos=new Float32Array(n*3),color=new Float32Array(n*3);
-  for(let i=0;i<n;i++){
-    const i3=i*3;
-    const theta=Math.random()*Math.PI*2;
-    const phi=Math.acos(2*Math.random()-1);
-    const r=12000+Math.random()*60000;
-    pos[i3]  =r*Math.sin(phi)*Math.cos(theta);
-    pos[i3+1]=r*Math.sin(phi)*Math.sin(theta);
-    pos[i3+2]=r*Math.cos(phi);
-    const t=Math.random();
-    if(t<0.55) col.setHSL(0.08,0.05,0.90+Math.random()*0.10);
-    else       col.setHSL(0.0,0.0,0.95);
-    color[i3]=col.r;color[i3+1]=col.g;color[i3+2]=col.b;
-  }
-  const g=new THREE.BufferGeometry();
-  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  g.setAttribute('color',new THREE.BufferAttribute(color,3));
-  scene.add(new THREE.Points(g,new THREE.PointsMaterial({
-    size:isMobile?1.8:2.4,vertexColors:true,
-    blending:THREE.AdditiveBlending,transparent:true,opacity:0.65,depthWrite:false
-  })));
-})();
-
-
-
-let galaxyMesh,armsMesh;
-(function(){
-  const n=isMobile?35000:65000;
-  const pos=new Float32Array(n*3),color=new Float32Array(n*3);
-  const ARMS=5,SPIN=4.5,SPREAD=0.38,H=55;
-  for(let i=0;i<n;i++){
-    const i3=i*3;
-    const arm=i%ARMS;
-    const t=Math.pow(Math.random(),0.55);
-    const rad=60+t*980;
-    const baseAng=(arm/ARMS)*Math.PI*2;
-    const spinAng=t*SPIN;
-    const scatter=(Math.random()-.5)*SPREAD*(1+t*1.5);
-    pos[i3]  =Math.cos(baseAng+spinAng+scatter)*rad;
-    pos[i3+1]=(Math.random()-.5)*H*Math.exp(-rad/500);
-    pos[i3+2]=Math.sin(baseAng+spinAng+scatter)*rad;
-    const nt=rad/1050;
-    if(nt<0.1)       col.setHSL(0.05,0.15,0.96);
-    else if(nt<0.3)  col.setHSL(0.93+Math.random()*0.04,0.80,0.78+Math.random()*0.12);
-    else if(nt<0.6)  col.setHSL(0.95+Math.random()*0.04,0.85,0.62+Math.random()*0.15);
-    else             col.setHSL(0.88+Math.random()*0.06,0.90,0.48+Math.random()*0.18);
-    color[i3]=col.r;color[i3+1]=col.g;color[i3+2]=col.b;
-  }
-  const g=new THREE.BufferGeometry();
-  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  g.setAttribute('color',new THREE.BufferAttribute(color,3));
-  galaxyMesh=new THREE.Points(g,new THREE.PointsMaterial({
-    size:isMobile?1.6:2.1,vertexColors:true,
-    blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.92
-  }));
-  scene.add(galaxyMesh);
-})();
-
-(function(){
-  const n=isMobile?6000:11000;
-  const pos=new Float32Array(n*3),color=new Float32Array(n*3);
-  for(let i=0;i<n;i++){
-    const i3=i*3,t=i/n,arm=i%5,base=(arm/5)*Math.PI*2;
-    const r=70+t*960,ang=base+t*Math.PI*4.2;
-    pos[i3]=Math.cos(ang)*r;pos[i3+1]=(Math.random()-.5)*10;pos[i3+2]=Math.sin(ang)*r;
-    col.setHSL(0.94+Math.random()*0.04,0.25,0.92+Math.random()*0.08);
-    color[i3]=col.r;color[i3+1]=col.g;color[i3+2]=col.b;
-  }
-  const g=new THREE.BufferGeometry();
-  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  g.setAttribute('color',new THREE.BufferAttribute(color,3));
-  armsMesh=new THREE.Points(g,new THREE.PointsMaterial({
-    size:isMobile?2.5:3.2,vertexColors:true,
-    blending:THREE.AdditiveBlending,transparent:true,depthWrite:false
-  }));
-  scene.add(armsMesh);
-})();
-
-scene.add(new THREE.Mesh(new THREE.SphereGeometry(42,64,64),new THREE.MeshBasicMaterial({color:0x000000})));
-
-const haloMat=new THREE.ShaderMaterial({
-  uniforms:{uTime:{value:0}},
-  vertexShader:`varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-  fragmentShader:`uniform float uTime;varying vec3 vN;
-    void main(){
-      float rim=1.-max(dot(vN,vec3(0,0,1)),0.);
-      rim=pow(rim,3.0);float p=0.78+0.18*sin(uTime*1.8);
-      vec3 c=mix(vec3(.28,.0,.12),vec3(.95,.28,.62),rim)*rim*p;
-      gl_FragColor=vec4(c,rim*0.48);
-    }`,
-  transparent:true,side:THREE.FrontSide,depthWrite:false,blending:THREE.AdditiveBlending
-});
-scene.add(new THREE.Mesh(new THREE.SphereGeometry(53,64,64),haloMat));
-
-function mkDisk(inner,outer,c1,c2,c3,op,rx){
-  const mat=new THREE.ShaderMaterial({
-    uniforms:{uTime:{value:0},uIn:{value:inner},uOut:{value:outer},
-      uC1:{value:new THREE.Color(c1)},uC2:{value:new THREE.Color(c2)},uC3:{value:new THREE.Color(c3)}},
-    vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`uniform float uTime,uIn,uOut;uniform vec3 uC1,uC2,uC3;varying vec3 vP;
-      float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-      void main(){
-        float r=length(vP.xy);float t=clamp((r-uIn)/(uOut-uIn),0.,1.);
-        vec3 c=t<.4?mix(uC1,uC2,t/.4):mix(uC2,uC3,(t-.4)/.6);
-        float ang=atan(vP.y,vP.x);float sw=h(vec2(r*.1,ang+uTime*.25))*.22;
-        float glow=(1.-t)*(1.-t)*1.1+sw*.25;
-        float a=(1.-t)*(1.-t*t)*${op.toFixed(2)}+sw*.08;
-        gl_FragColor=vec4(c*glow,clamp(a,0.,1.));
-      }`,
-    side:THREE.DoubleSide,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false
+} else {
+  micBtn.addEventListener('click', () => {
+    alert('Tu navegador no soporta reconocimiento de voz. Prueba con Chrome en computadora o Android, o usa el texto.');
   });
-  const m=new THREE.Mesh(new THREE.RingGeometry(inner,outer,256,8),mat);
-  m.rotation.x=rx;scene.add(m);return mat;
-}
-const dM1=mkDisk(48,165,'#FFFFFF','#FFB8D8','#880044',0.60,Math.PI/2);
-const dM2=mkDisk(56,132,'#FFD6E8','#E8508A','#3D001A',0.32,Math.PI/2+0.13);
-const dM3=mkDisk(165,295,'#FF8CB8','#AA0050','#000000',0.16,Math.PI/2);
-
-function mkJet(dir){
-  const mat=new THREE.ShaderMaterial({
-    uniforms:{uTime:{value:0}},
-    vertexShader:`varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`uniform float uTime;varying vec2 vU;
-      void main(){
-        float f=pow(1.-vU.y,2.)*(1.-vU.x*2.);float p=.6+.28*sin(uTime*3.8+vU.y*9.);
-        vec3 c=mix(vec3(1.,.72,.88),vec3(.72,.0,.38),vU.y);
-        gl_FragColor=vec4(c*p,f*0.32);
-      }`,
-    transparent:true,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false
-  });
-  const m=new THREE.Mesh(new THREE.ConeGeometry(8,225,32,1,true),mat);
-  m.position.y=dir*112;m.rotation.x=dir>0?0:Math.PI;scene.add(m);return mat;
-}
-const jM1=mkJet(1),jM2=mkJet(-1);
-
-const pN=300;
-const pGeo=new THREE.BufferGeometry(),pBuf=new Float32Array(pN*3),pA=[],pR=[];
-for(let i=0;i<pN;i++){
-  const a=Math.random()*Math.PI*2,r=52+Math.random()*210;
-  pA.push(a);pR.push(r);
-  pBuf[i*3]=Math.cos(a)*r;pBuf[i*3+1]=(Math.random()-.5)*7;pBuf[i*3+2]=Math.sin(a)*r;
-}
-pGeo.setAttribute('position',new THREE.BufferAttribute(pBuf,3));
-const diskPts=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xFFB0D0,size:2.0,transparent:true,opacity:0.85,blending:THREE.AdditiveBlending,depthWrite:false}));
-scene.add(diskPts);
-
-function hXY(t){return{x:16*Math.pow(Math.sin(t),3),y:13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)};}
-const hN=isMobile?5000:8000,hP=new Float32Array(hN*3),hC=new Float32Array(hN*3);
-for(let i=0;i<hN;i++){
-  const i3=i*3,t=Math.random()*Math.PI*2,s=0.45+Math.random()*0.55,p=hXY(t);
-  hP[i3]=p.x*s*3.8;hP[i3+1]=p.y*s*3.8;hP[i3+2]=(Math.random()-.5)*12;
-  const d=Math.sqrt(p.x*p.x+p.y*p.y)/22;
-  const hue=0.94-d*0.04;
-  const lig=d<0.25?0.90-d*0.55:0.62-d*0.05;
-  col.setHSL(hue,0.95,Math.max(lig,0.40));
-  hC[i3]=col.r;hC[i3+1]=col.g;hC[i3+2]=col.b;
-}
-const hGeo=new THREE.BufferGeometry();
-hGeo.setAttribute('position',new THREE.BufferAttribute(hP,3));
-hGeo.setAttribute('color',new THREE.BufferAttribute(hC,3));
-const heart=new THREE.Points(hGeo,new THREE.PointsMaterial({
-  size:isMobile?2.1:2.6,vertexColors:true,
-  blending:THREE.NormalBlending,transparent:true,depthWrite:false,opacity:0.97
-}));
-heart.position.y=isMobile?100:135;scene.add(heart);
-
-const phrases=[
-  "Eres única",
-  "Tu luz",
-  "Eres especial",
-  "Tu esencia",
-  "Tu sonrisa",
-  "Eres magia",
-  "Tu energía",
-  "Eres calma",
-  "Tu vibra",
-  "Eres tú",
-  "Tan auténtica",
-  "Tu brillo",
-  "Eres diferente",
-  "Tu forma",
-  "Eres increíble",
-  "Tu presencia",
-  "Eres paz",
-  "Tu mundo",
-  "Eres arte",
-  "Tu manera",
-  "Eres única siempre",
-  "Tu encanto",
-  "Eres especial hoy",
-  "Tu estilo",
-  "Eres distinta",
-  "Tu magia",
-  "Eres todo eso",
-  "Tu esencia pura",
-  "Eres natural",
-  "Tu brillo real"
-];
-
-const sC=[
-  {fill:'#FF69B4',sh:'#C2185B'},
-  {fill:'#FF1493',sh:'#880E4F'},
-  {fill:'#FFB6C1',sh:'#E91E8C'},
-  {fill:'#FFFFFF',sh:'#E91E8C'},
-  {fill:'#FFD6EC',sh:'#C2185B'},
-  {fill:'#FF85C2',sh:'#AD1457'},
-];
-function mkSpr(txt,cd){
-  const cv=document.createElement('canvas');cv.width=1100;cv.height=240;
-  const cx=cv.getContext('2d');
-  cx.font="bold 105px 'Quicksand',sans-serif";
-  // Contorno negro para legibilidad sobre cualquier fondo
-  cx.strokeStyle='rgba(0,0,0,0.55)';cx.lineWidth=8;cx.lineJoin='round';
-  cx.strokeText(txt,550,122);
-  // Sombra rosa
-  cx.shadowColor=cd.sh;cx.shadowBlur=28;
-  cx.fillStyle=cd.fill;cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText(txt,550,122);
-  cx.shadowBlur=10;
-  cx.fillText(txt,550,122);
-  return new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,blending:THREE.NormalBlending,depthWrite:false}));
-}
-const tGrp=new THREE.Group();scene.add(tGrp);const sMs=[];
-// Escala adaptada: móvil más grande para que se vea bien en pantalla pequeña
-const sprW=isMobile?170:145, sprH=isMobile?39:33;
-for(let i=0;i<80;i++){
-  const cd=sC[i%sC.length],sp=mkSpr(phrases[i%phrases.length],cd);
-  const arm=i%5,base=(arm/5)*Math.PI*2,t2=i/80;
-  const r=160+t2*820,ang=base+t2*Math.PI*4.2;
-  // En móvil achatar la distribución vertical para que quepa en pantalla
-  const ySpread=isMobile?55:110;
-  sp.position.set(Math.cos(ang)*r,(Math.random()-.5)*ySpread,Math.sin(ang)*r);
-  sp.scale.set(sprW,sprH,1);sp.material.opacity=0.0;tGrp.add(sp);sMs.push(sp.material);
 }
 
-const emojis=['💖','💕','🌸','🌷','🌺','💗','✨','💫','🌹','💎'];
-const eGrp=new THREE.Group();scene.add(eGrp);
-function mkEmoji(e){
-  const cv=document.createElement('canvas');cv.width=256;cv.height=256;
-  const cx=cv.getContext('2d');
-  cx.font="195px 'Segoe UI Emoji','Apple Color Emoji',sans-serif";
-  cx.textAlign='center';cx.textBaseline='middle';cx.fillText(e,128,150);
-  const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;
-  return new THREE.Mesh(new THREE.PlaneGeometry(52,52),new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.04,depthWrite:false}));
-}
-for(let i=0;i<24;i++){
-  const m=mkEmoji(emojis[i%emojis.length]);
-  const a=i/24*Math.PI*2,r=195+Math.random()*620;
-  m.position.set(Math.cos(a)*r,(Math.random()-.5)*115,Math.sin(a)*r);eGrp.add(m);
-}
+// --- Streak / sessions tracking ---
+async function loadProgress(){
+  try{
+    const result = await window.storage.get('progress', false);
+    let data = result ? JSON.parse(result.value) : { streak: 0, lastDate: null, sessions: 0 };
 
-scene.add(new THREE.AmbientLight(0xFFE8F8,0.28));
-const pl=new THREE.PointLight(0xFF70B0,2.8,430);scene.add(pl);
-
-window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);
-});
-
-const clock=new THREE.Clock();
-function loop(){
-  requestAnimationFrame(loop);
-  const t=clock.getElapsedTime();
-  galaxyMesh.rotation.y=t*0.022;
-  armsMesh.rotation.y=t*0.022;
-  tGrp.rotation.y=t*0.016;
-  eGrp.rotation.y=t*0.010;
-  eGrp.children.forEach(m=>m.lookAt(camera.position));
-  heart.rotation.y+=0.0035;
-  heart.position.y=(isMobile?100:135)+Math.sin(t*1.7)*7;
-  const pa=diskPts.geometry.attributes.position.array;
-  for(let i=0;i<pN;i++){
-    const sp=0.28+pR[i]*.00085,ang=pA[i]+t*sp;
-    pa[i*3]=Math.cos(ang)*pR[i];pa[i*3+2]=Math.sin(ang)*pR[i];
+    const today = new Date().toISOString().slice(0,10);
+    if(data.lastDate !== today){
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+      if(data.lastDate === yesterday){
+        data.streak += 1;
+      } else {
+        data.streak = 1;
+      }
+      data.sessions += 1;
+      data.lastDate = today;
+      await window.storage.set('progress', JSON.stringify(data), false);
+    }
+    streakBadge.textContent = `🔥 ${data.streak} día${data.streak === 1 ? '' : 's'}`;
+    sessionCountEl.textContent = data.sessions;
+  }catch(e){
+    console.error('storage error', e);
   }
-  diskPts.geometry.attributes.position.needsUpdate=true;
-  haloMat.uniforms.uTime.value=t;
-  dM1.uniforms.uTime.value=t;dM2.uniforms.uTime.value=t;dM3.uniforms.uTime.value=t;
-  jM1.uniforms.uTime.value=t;jM2.uniforms.uTime.value=t;
-  sMs.forEach((m,i)=>{const tgt=0.88+Math.sin(t*1.4+i)*0.10;m.opacity=THREE.MathUtils.lerp(m.opacity,tgt,.022);});
-  pl.intensity=2.5+Math.sin(t*2.8)*.55;
-  controls.update();
-  composer.render();
 }
-loop();
+loadProgress();
+
+// preload voices for speechSynthesis
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
 </script>
 </body>
 </html>
