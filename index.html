@@ -1,328 +1,1336 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { trpc } from "@/lib/trpc";
-import {
-  ArrowRight,
-  BookOpen,
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  CircleHelp,
-  Headphones,
-  LockKeyhole,
-  Mic,
-  Music2,
-  Play,
-  RotateCcw,
-  Sparkles,
-  Square,
-  Volume2,
-  Waves,
-  X,
-  ExternalLink,
-} from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Conoce Omnilife | Día Morado y acompañamiento personal</title>
+<meta name="description" content="Conoce cómo se vive un Día Morado en Omnilife, descubre experiencias de personas y recibe orientación personalizada para conocer tus opciones de registro.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111b17;
+  --green:#123d2c;
+  --green-2:#1d6044;
+  --deep:#071b14;
+  --gold:#c7a15a;
+  --gold-light:#e8d2a0;
+  --cream:#fbfaf6;
+  --paper:#ffffff;
+  --sage:#eef4f0;
+  --muted:#66766f;
+  --line:#e3e8e4;
+  --wa:#25d366;
+  --shadow:0 24px 70px rgba(10,34,25,.12);
+  --shadow-lg:0 35px 100px rgba(7,27,20,.18);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font:16px/1.6 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased
+}
+a{text-decoration:none;color:inherit}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+img{max-width:100%;display:block}
+.wrap{width:min(1160px,calc(100% - 40px));margin:auto}
+.eyebrow{
+  color:var(--gold);font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  font-size:.68rem
+}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border:1px solid transparent;border-radius:5px;padding:14px 22px;
+  font-weight:800;transition:.25s ease
+}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 12px 30px rgba(18,61,44,.2)}
+.btn-primary:hover{background:var(--green-2);transform:translateY(-2px)}
+.btn-light{border-color:var(--line);background:#fff;color:var(--green)}
+.btn-light:hover{border-color:var(--gold);transform:translateY(-2px)}
+.btn-wa{background:var(--wa);color:#07321b}
+.section{padding:105px 0}
+.section-head{max-width:720px;margin-bottom:44px}
+.section-head h2{
+  font-size:clamp(2.2rem,4.3vw,4rem);line-height:1.03;
+  letter-spacing:-.045em;margin:10px 0 18px;color:var(--green)
+}
+.section-head p{color:var(--muted);font-size:1.04rem;max-width:650px}
+.site-nav{
+  position:sticky;top:0;z-index:30;background:rgba(251,250,246,.88);
+  backdrop-filter:blur(18px);border-bottom:1px solid rgba(227,232,228,.8)
+}
+.nav-inner{height:76px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:850;font-size:1.03rem;color:var(--green);letter-spacing:-.02em}
+.brand span{display:inline-block;margin-left:9px;color:var(--gold);font:700 .59rem monospace;letter-spacing:.1em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:27px;font-size:.84rem;color:var(--muted)}
+.nav-links a:hover{color:var(--green)}
+.mobile-nav{display:none}
 
-type RecognitionLike = {
-  lang: string;
-  interimResults: boolean;
-  maxAlternatives: number;
-  onstart: (() => void) | null;
-  onend: (() => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  start: () => void;
-  stop: () => void;
-};
+.hero{
+  position:relative;overflow:hidden;padding:115px 0 125px;
+  background:
+    radial-gradient(circle at 85% 25%,rgba(199,161,90,.14),transparent 25%),
+    linear-gradient(135deg,#fbfaf6 0%,#f0f6f2 100%)
+}
+.hero:after{
+  content:"";position:absolute;width:520px;height:520px;border:1px solid rgba(199,161,90,.18);
+  border-radius:50%;right:-220px;top:-190px
+}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:28px;align-items:center;max-width:930px;position:relative;z-index:1}
+.hero h1{
+  font:850 clamp(3rem,6.2vw,6.1rem)/.98 Inter,system-ui,sans-serif;
+  letter-spacing:-.065em;color:var(--green);margin:16px 0 25px
+}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero-lead{font-size:1.16rem;color:var(--muted);max-width:650px;margin-bottom:30px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.trust{display:flex;flex-wrap:wrap;gap:19px;color:var(--muted);font-size:.8rem}
+.trust span:before{content:"✓";color:var(--gold);font-weight:900;margin-right:7px}
 
-type Unit = {
-  id: string;
-  title: string;
-  summary: string;
-  topics: string[];
-  phrases: [string, string, string][];
-  exercise: string;
-  answer: string;
-  practiceItems: [string, string][];
-};
+.choice-band{background:var(--deep);color:#fff;padding:23px 0}
+.choice-band-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.choice-band strong{font-size:1.02rem}
+.choice-band p{margin:3px 0 0;color:#bcd0c6;font-size:.87rem}
+.choice-band .btn{white-space:nowrap;background:var(--gold);color:var(--deep)}
 
-type PronunciationEvaluation = {
-  score: number;
-  verdict: "excellent" | "good" | "practice";
-  recognized: string;
-  feedback: string;
-  nextStep: string;
-  limitation: string;
-};
+.video-section{
+  padding:105px 0;background:var(--deep);color:white;position:relative;overflow:hidden
+}
+.video-section:before{
+  content:"";position:absolute;width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(199,161,90,.12);right:-250px;top:-250px
+}
+.video-wrap{max-width:1020px;position:relative;z-index:1}
+.video-section .section-head{max-width:760px}
+.video-section .section-head h2{color:#fff}
+.video-section .section-head p{color:#bcd0c6}
+.video-box{
+  position:relative;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;
+  box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.1)
+}
+.video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-play{
+  position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);
+  width:78px;height:78px;border:0;border-radius:50%;background:var(--gold);color:#fff;
+  font-size:1.5rem;box-shadow:0 15px 40px rgba(0,0,0,.35)
+}
+.video-meta{
+  display:flex;justify-content:space-between;gap:20px;align-items:center;
+  margin-top:18px;color:#bcd0c6;font-size:.82rem
+}
+.video-meta strong{color:var(--gold-light);font-weight:800}
 
-type LanguageHelp = {
-  source: string;
-  translation: string;
-  pronunciation: string;
-  tip: string;
-};
+.options{background:#fff}
+.options-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.option{
+  border:1px solid var(--line);border-radius:14px;padding:30px;position:relative;
+  display:flex;flex-direction:column;min-height:350px;background:#fff;transition:.3s ease
+}
+.option:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:#b8c9bf}
+.option.featured{border:1px solid var(--gold);box-shadow:0 18px 45px rgba(199,161,90,.14)}
+.option-badge{
+  position:absolute;top:-12px;right:18px;border-radius:20px;padding:5px 12px;
+  background:var(--gold);color:white;font-size:.66rem;font-weight:800;letter-spacing:.04em
+}
+.option-icon{
+  width:45px;height:45px;border-radius:50%;background:var(--sage);display:grid;
+  place-items:center;color:var(--green);font-weight:800;margin-bottom:21px
+}
+.option h3{font:700 1.55rem/1.1 Inter,system-ui,sans-serif;color:var(--green);margin:0 0 8px}
+.option .price{color:var(--gold);font-weight:800;margin-bottom:14px}
+.option p{color:var(--muted);margin:0 0 18px;font-size:.92rem}
+.option ul{padding:0;margin:0 0 22px;list-style:none;color:var(--ink);font-size:.86rem}
+.option li{margin:8px 0}
+.option li:before{content:"✓";color:var(--green-2);font-weight:800;margin-right:8px}
+.option .btn{margin-top:auto;width:100%}
+.small-note{font-size:.76rem;color:var(--muted);margin-top:22px}
 
-type SongPractice = {
-  title: string;
-  artist: string;
-  level: string;
-  color: string;
-  url: string;
-  description: string;
-  vocabulary: [string, string, string][];
-  practiceLine: [string, string, string];
-  publicDomain?: boolean;
-};
+.process{background:var(--sage)}
+.process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step{background:white;border-radius:14px;padding:27px;border:1px solid var(--line)}
+.step-no{font:800 2.3rem/1 Inter,system-ui,sans-serif;color:var(--gold)}
+.step h3{color:var(--green);margin:15px 0 7px}
+.step p{color:var(--muted);margin:0;font-size:.92rem}
 
-function TranslationRow({ source, answer, direction, onCorrect }: { source: string; answer: string; direction: "english" | "spanish"; onCorrect: () => void }) {
-  const [value, setValue] = useState("");
-  const [state, setState] = useState<"idle" | "correct" | "wrong">("idle");
-  const check = () => {
-    const correct = normalize(value) === normalize(answer);
-    setState(correct ? "correct" : "wrong");
-    if (correct) onCorrect();
-  };
-  return <div className="rounded-2xl border border-[#e3e9e1] bg-white p-3"><p className="text-xs font-bold uppercase tracking-wide text-[#8e9a96]">{direction === "english" ? "Pasa al español" : "Pasa al inglés"}</p><p className="mt-2 font-display text-base font-bold text-[#34474c]">{source}</p><div className="mt-2 flex flex-wrap gap-2"><input value={value} onChange={(event) => { setValue(event.target.value); setState("idle"); }} onKeyDown={(event) => event.key === "Enter" && check()} placeholder="Escribe la traducción" aria-label={`Traduce: ${source}`} className="h-10 min-w-0 flex-1 rounded-xl border border-[#dce3db] px-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#6fa9a2]" /><button onClick={check} className="h-10 rounded-xl bg-[#eaf4f1] px-3 text-xs font-black text-[#4f7772] hover:bg-[#d9ebe6]">Comprobar</button></div>{state === "correct" && <p className="mt-2 text-xs font-black text-[#478262]">✓ Correcto</p>}{state === "wrong" && <p className="mt-2 text-xs font-black text-[#bd6a50]">Revisa la frase y vuelve a intentarlo.</p>}</div>;
+.proof-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
+.proof-image{border-radius:18px;overflow:hidden;background:var(--sage);box-shadow:var(--shadow)}
+.proof-image img{width:100%;aspect-ratio:1/1;object-fit:cover}
+.proof-copy h2{font:700 clamp(2.1rem,4vw,3.7rem)/1.04 Inter,system-ui,sans-serif;color:var(--green);margin:12px 0 18px;letter-spacing:-.045em}
+.quote{border-left:2px solid var(--gold);padding-left:18px;color:var(--muted);font-size:1.04rem}
+.proof-points{display:grid;gap:13px;margin:27px 0}
+.proof-points div{display:flex;gap:12px;align-items:flex-start}
+.proof-points b{color:var(--green)}
+.proof-points span{color:var(--muted);font-size:.9rem}
+
+.form-section{background:var(--deep);color:white}
+.form-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:start}
+.form-copy h2{font:850 clamp(2.3rem,4.2vw,4.1rem)/1.04 Inter,system-ui,sans-serif;margin:12px 0 18px;letter-spacing:-.05em}
+.form-copy p{color:#bcd0c6}
+.form-copy .eyebrow{color:var(--gold-light)}
+.mini-guarantee{margin-top:30px;padding:17px;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#d7e9dd;font-size:.86rem}
+.lead-form{background:white;color:var(--ink);border-radius:16px;padding:30px;box-shadow:var(--shadow-lg)}
+.mode-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:21px}
+.mode-tabs button{border:1px solid var(--line);border-radius:7px;background:var(--sage);padding:10px 6px;color:var(--muted);font-size:.75rem;font-weight:800}
+.mode-tabs button.active{background:var(--green);color:white;border-color:var(--green)}
+.field{margin-bottom:15px}
+.field label{display:block;font-weight:800;font-size:.81rem;margin-bottom:6px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:12px 13px;outline:none;background:#fff;color:var(--ink)}
+.field textarea{min-height:100px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(35,107,75,.12)}
+.form-submit{width:100%;border:0}
+.consent{display:flex;gap:9px;align-items:flex-start;font-size:.71rem;color:var(--muted);margin:13px 0}
+.consent input{margin-top:3px;accent-color:var(--green)}
+.consent a{color:var(--green);text-decoration:underline}
+.form-status{font-size:.8rem;color:var(--green);min-height:20px;text-align:center}
+
+.faq{max-width:800px;margin:auto}
+.faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px;padding:18px 0;font-weight:800;color:var(--green)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary span{color:var(--gold);font-size:1.3rem}
+.faq p{color:var(--muted);margin:0 0 18px;font-size:.92rem}
+
+.footer{background:#06170f;color:white;text-align:center;padding:45px 0 90px}
+.footer p{color:#bcd0c6;font-size:.8rem}
+.footer a{text-decoration:underline}
+.footer .disclaimer{max-width:700px;margin:18px auto 0;font-size:.7rem}
+
+.float-wa{
+position:fixed;
+right:24px;
+bottom:24px;
+z-index:45;
+display:flex;
+align-items:center;
+gap:11px;
+min-height:58px;
+padding:9px 18px 9px 10px;
+border:1px solid rgba(255,255,255,.38);
+border-radius:999px;
+background:linear-gradient(135deg,#25d366 0%,#16b957 100%);
+color:#fff;
+box-shadow:0 14px 34px rgba(7,73,38,.25),0 4px 12px rgba(0,0,0,.12);
+font-size:.84rem;
+font-weight:800;
+letter-spacing:-.01em;
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+transition:transform .28s ease,box-shadow .28s ease,filter .28s ease;
+animation:waFloat 3.2s ease-in-out infinite
+}
+.float-wa::before{
+content:'';
+width:40px;
+height:40px;
+flex:0 0 40px;
+border-radius:50%;
+background:rgba(255,255,255,.18);
+border:1px solid rgba(255,255,255,.28);
+box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='white' d='M19.1 17.2c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1-.2-.3 0-.5.1-.7.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.6-1-2.2-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1 2.9 1.1 3.1c.1.2 2 3 4.9 4.2.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2.1-1.3.3-.6.3-1.1.2-1.3-.1-.2-.3-.3-.6-.5Z'/%3E%3Cpath fill='white' d='M16 3.5A12.5 12.5 0 0 0 5.2 22.3L3.7 28.1l5.9-1.5A12.5 12.5 0 1 0 16 3.5Zm0 22.8c-2 0-4-.5-5.7-1.6l-.4-.2-3.5.9.9-3.4-.2-.4A10.3 10.3 0 1 1 16 26.3Z'/%3E%3C/svg%3E");
+background-size:23px 23px;
+background-position:center;
+background-repeat:no-repeat
+}
+.float-wa span{display:block;white-space:nowrap}
+.float-wa:hover{
+transform:translateY(-4px) scale(1.015);
+box-shadow:0 18px 42px rgba(7,73,38,.32),0 6px 16px rgba(0,0,0,.14);
+filter:saturate(1.08)
+}
+.float-wa:active{transform:translateY(-1px) scale(.99)}
+@keyframes waFloat{
+0%,100%{box-shadow:0 14px 34px rgba(7,73,38,.25),0 4px 12px rgba(0,0,0,.12)}
+50%{box-shadow:0 18px 42px rgba(7,73,38,.32),0 5px 16px rgba(0,0,0,.13)}
+}
+.float-wa:hover{transform:translateY(-2px)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120%);background:var(--green);color:white;padding:12px 18px;border-radius:8px;z-index:50;transition:.3s ease}
+.toast.show{transform:translate(-50%,0)}
+.photo-section{background:#fff}
+.photo-section .proof-image{max-width:520px;margin:auto}
+.photo-section .proof-copy{max-width:560px}
+.cookie-notice{position:fixed;left:18px;right:18px;bottom:18px;z-index:60;background:#fff;border:1px solid #cbded2;border-radius:14px;box-shadow:0 18px 45px rgba(0,0,0,.18);padding:16px 18px;display:flex;gap:18px;align-items:center;justify-content:space-between}
+.cookie-notice[hidden]{display:none}
+.cookie-notice p{margin:0;color:#405b4e;font-size:.78rem;line-height:1.45;max-width:760px}
+.cookie-notice a{color:#164b36;text-decoration:underline}
+.cookie-actions{display:flex;gap:8px;flex-wrap:wrap}
+.cookie-actions button{border-radius:7px;padding:10px 13px;border:1px solid #d9e6dd;font-weight:800;font-size:.76rem}
+.cookie-accept{background:#164b36;color:#fff;border-color:#164b36!important}
+.cookie-reject{background:#eef7f1;color:#164b36}
+@media(max-width:850px){
+  .nav-links{display:none}.mobile-nav{display:block;border:0;background:none;color:var(--green);font-size:1.4rem}
+  .hero{padding:75px 0 85px}.hero-grid,.proof-grid,.form-grid{grid-template-columns:1fr;gap:38px}
+  .options-grid,.process-grid{grid-template-columns:1fr}.option{min-height:0}
+  .choice-band-inner{display:block}.choice-band .btn{margin-top:14px}
+  .section{padding:78px 0}.float-wa{right:14px;bottom:14px}.video-meta{display:block}
+  .form-grid{gap:25px}
+}
+@media(max-width:480px){
+  .wrap{width:min(100% - 28px,1160px)}.nav-inner{height:64px}.hero h1{font-size:2.85rem}
+  .hero-lead{font-size:1rem}.hero-actions .btn{width:100%}.mode-tabs{grid-template-columns:1fr}
+  .lead-form{padding:20px}.choice-band .btn{width:100%}.video-section{padding:70px 0}
+}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+</style>
+
+<style>
+/* ===== PREMIUM MOTION SYSTEM ===== */
+:root{
+  --ease-premium:cubic-bezier(.22,1,.36,1);
 }
 
-const levels = [
-  { id: 1, label: "Nivel 1", title: "Base absoluta", detail: "Semanas 1–4", color: "#f4c7ad" },
-  { id: 2, label: "Nivel 2", title: "Frases cotidianas", detail: "Semanas 5–8", color: "#b9dcd7" },
-  { id: 3, label: "Nivel 3", title: "Comunicación básica", detail: "Semanas 9–12", color: "#d8c5e8" },
-];
+body{overflow-x:hidden}
 
-const units: Unit[] = [
-  { id: "1.1", title: "Primer contacto", summary: "Saludos, presentación, to be, números 0–20 y alfabeto.", topics: ["Hello / Hi", "I am / You are", "A–G con voz", "Números 0–20"], phrases: [["Hello! My name is Hamilton.", "¡Hola! Me llamo Hamilton.", "jelóu · mai néim is Jámilton"], ["How are you? I am fine.", "¿Cómo estás? Estoy bien.", "jáu ar iu · ai am fáin"], ["Nice to meet you.", "Mucho gusto.", "náis tu míit iu"], ["What is your name?", "¿Cómo te llamas?", "juat is ior néim"], ["See you later!", "¡Hasta luego!", "sí iu léirer"]], exercise: "My name ___ Hamilton.", answer: "is", practiceItems: [["I ___ fine.", "am"], ["___ to meet you.", "Nice"], ["See ___ tomorrow.", "you"]] },
-  { id: "1.2", title: "Objetos y personas", summary: "a/an, this/that, objetos, colores y plurales.", topics: ["a / an", "this / that", "Colores", "Plural con -s"], phrases: [["This is a book.", "Esto es un libro.", "dis is a buk"], ["Is this a pen? Yes, it is.", "¿Es esto un bolígrafo? Sí.", "is dis a pen · ies it is"], ["These are blue books.", "Estos son libros azules.", "díis ar blú buks"], ["That is an orange.", "Eso es una naranja.", "dat is an órinch"], ["These are my keys.", "Estas son mis llaves.", "díis ar mai kís"]], exercise: "This is ___ apple.", answer: "an", practiceItems: [["That is ___ car.", "a"], ["These ___ red pens.", "are"], ["It is ___ umbrella.", "an"]] },
-  { id: "1.3", title: "Información personal", summary: "Edad, país, ciudad, profesión y preguntas básicas.", topics: ["What / Where / Who", "Edad", "País y ciudad", "Números hasta 100"], phrases: [["Where are you from?", "¿De dónde eres?", "juér ar iu from"], ["I am from Mexico.", "Soy de México.", "ai am from Méksikou"], ["I am twenty years old.", "Tengo veinte años.", "ai am tuénti iers óuld"], ["What do you do?", "¿A qué te dedicas?", "juat du iu dú"], ["I am a teacher.", "Soy profesor/a.", "ai am a tícher"]], exercise: "Where ___ you from?", answer: "are", practiceItems: [["I ___ from Peru.", "am"], ["How old ___ you?", "are"], ["What ___ your job?", "is"]] },
-  { id: "1.4", title: "Familia y descripción", summary: "Familia, posesivos, adjetivos y have/has.", topics: ["my / your / his / her", "Family", "Adjetivos", "have / has"], phrases: [["This is my mother.", "Esta es mi madre.", "dis is mai móder"], ["She is kind.", "Ella es amable.", "shi is káind"], ["He has a big family.", "Él tiene una familia grande.", "ji jas a big fámili"], ["My brother is tall.", "Mi hermano es alto.", "mai bróder is tol"], ["Her name is Sofia.", "Su nombre es Sofía.", "jer néim is Sofía"]], exercise: "She ___ a sister.", answer: "has", practiceItems: [["He ___ kind.", "is"], ["They ___ two children.", "have"], ["This is ___ father.", "my"]] },
-  { id: "2.1", title: "Acciones diarias", summary: "Presente simple, rutinas, horarios y negación.", topics: ["I work", "She lives", "do / does", "Rutinas"], phrases: [["I study English every day.", "Estudio inglés cada día.", "ai stádi Ínglish évri déi"], ["She works at nine.", "Ella trabaja a las nueve.", "shi uérks at náin"], ["I do not work on Sunday.", "No trabajo el domingo.", "ai du not uérk on sándei"], ["He gets up early.", "Él se levanta temprano.", "ji gets ap érli"], ["Do you study at night?", "¿Estudias de noche?", "du iu stádi at náit"]], exercise: "I ___ English every day.", answer: "study", practiceItems: [["She ___ in a bank.", "works"], ["I ___ not play tennis.", "do"], ["___ you work here?", "Do"]] },
-  { id: "2.2", title: "Gustos y necesidades", summary: "like, love, want, need, comida y pedidos educados.", topics: ["I like", "I want", "Food", "Please"], phrases: [["I like coffee.", "Me gusta el café.", "ai laik cófi"], ["I need water, please.", "Necesito agua, por favor.", "ai níid uóter plís"], ["I do not like onions.", "No me gustan las cebollas.", "ai du not laik ónians"], ["I want a sandwich.", "Quiero un sándwich.", "ai uant a sánduich"], ["Can I have tea, please?", "¿Puedo pedir té, por favor?", "can ai jav tí plís"]], exercise: "I ___ water, please.", answer: "need", practiceItems: [["I ___ pizza.", "like"], ["I ___ a coffee.", "want"], ["Can I ___ some bread?", "have"]] },
-  { id: "2.3", title: "Lugares y direcciones", summary: "there is/are, lugares y preposiciones.", topics: ["There is", "in / on / under", "City", "Directions"], phrases: [["There is a bank near here.", "Hay un banco cerca de aquí.", "der is a bank níar jíer"], ["The book is on the table.", "El libro está sobre la mesa.", "de buk is on de téibol"], ["Where is the station?", "¿Dónde está la estación?", "juér is de stéishon"], ["The school is next to the park.", "La escuela está junto al parque.", "de skúul is nekst tu de park"], ["Turn left, please.", "Gire a la izquierda, por favor.", "tern left plís"]], exercise: "There ___ two chairs.", answer: "are", practiceItems: [["There ___ a bus stop.", "is"], ["The keys are ___ the table.", "on"], ["Go ___ and turn right.", "straight"]] },
-  { id: "2.4", title: "Tiempo y planes", summary: "Días, meses, horas, clima y presente continuo.", topics: ["Days / months", "What time?", "I am studying", "Weather"], phrases: [["What time is it?", "¿Qué hora es?", "juat táim is it"], ["I am studying now.", "Estoy estudiando ahora.", "ai am stádiing náu"], ["It is sunny today.", "Hoy hace sol.", "it is sáni tudéi"], ["I am meeting my friend tomorrow.", "Mañana veré a mi amigo.", "ai am míiting mai frend tumórou"], ["It is raining outside.", "Está lloviendo afuera.", "it is réining autsáid"]], exercise: "I am ___ English now.", answer: "studying", practiceItems: [["It is ___ today.", "sunny"], ["What ___ is it?", "time"], ["We are ___ now.", "learning"]] },
-  { id: "3.1", title: "Pasado básico", summary: "was/were, pasado regular y expresiones de tiempo.", topics: ["was / were", "yesterday", "last week", "-ed"], phrases: [["I was tired yesterday.", "Estaba cansado ayer.", "ai uos táierd yésterdei"], ["We were at home.", "Estábamos en casa.", "uí uer at jóum"], ["I worked last week.", "Trabajé la semana pasada.", "ai uérkt last uík"], ["She visited her grandmother.", "Ella visitó a su abuela.", "shi vísited jer grándmoder"], ["Did you study yesterday?", "¿Estudiaste ayer?", "did iu stádi yésterdei"]], exercise: "They ___ happy yesterday.", answer: "were", practiceItems: [["He ___ at school.", "was"], ["We ___ English last night.", "studied"], ["Did you ___ TV?", "watch"]] },
-  { id: "3.2", title: "Futuro y posibilidades", summary: "going to, will, planes y predicciones.", topics: ["going to", "will", "Plans", "Predictions"], phrases: [["I am going to study.", "Voy a estudiar.", "ai am góing tu stádi"], ["I will help you.", "Te ayudaré.", "ai uil jelp iu"], ["It will be fine.", "Estará bien.", "it uil bi fáin"], ["We are going to travel.", "Vamos a viajar.", "uí ar góing tu trável"], ["Will you call me later?", "¿Me llamarás después?", "uil iu col mi léirer"]], exercise: "I am going ___ travel.", answer: "to", practiceItems: [["She is going ___ cook.", "to"], ["I ___ help you.", "will"], ["They are going to ___ tomorrow.", "work"]] },
-  { id: "3.3", title: "Conversaciones prácticas", summary: "Comprar, pedir comida, teléfono y pedir que repitan.", topics: ["Shopping", "Restaurant", "Phone", "Repeat, please"], phrases: [["Can I have water, please?", "¿Puedo pedir agua, por favor?", "can ai jav uóter plís"], ["How much is it?", "¿Cuánto cuesta?", "jáu mach is it"], ["Could you repeat, please?", "¿Podría repetir, por favor?", "cud iu ripít plís"], ["I would like a small coffee.", "Quisiera un café pequeño.", "ai uod laik a smol cófi"], ["Can you speak slowly?", "¿Puede hablar despacio?", "can iu spík slóuli"]], exercise: "Could you ___, please?", answer: "repeat", practiceItems: [["How ___ is this?", "much"], ["I would ___ a tea.", "like"], ["Please speak ___.", "slowly"]] },
-  { id: "3.4", title: "Repaso y autonomía", summary: "Lectura, escucha lenta, escritura y conversación guiada.", topics: ["Lectura", "Escucha", "Escritura", "Conversación"], phrases: [["I can speak a little English.", "Puedo hablar un poco de inglés.", "ai can spík a lírol Ínglish"], ["Please speak slowly.", "Por favor, hable despacio.", "plís spík slóuli"], ["I am learning English.", "Estoy aprendiendo inglés.", "ai am lérning Ínglish"], ["I understand a little.", "Entiendo un poco.", "ai anderstánd a lírol"], ["Can you say that again?", "¿Puede decir eso otra vez?", "can iu séi dat agén"]], exercise: "I am ___ English.", answer: "learning", practiceItems: [["I can ___ a little.", "speak"], ["Please speak ___.", "slowly"], ["Can you say that ___?", "again"]] },
-];
-
-const alphabet = [
-  ["A", "apple", "manzana", "ei · ápol"], ["B", "book", "libro", "bí · buk"], ["C", "cat", "gato", "sí · kat"], ["D", "dog", "perro", "dí · dog"], ["E", "egg", "huevo", "í · eg"], ["F", "fish", "pez", "ef · fish"], ["G", "green", "verde", "yí · grín"],
-];
-
-const guidedAudio = "/manus-storage/pronunciacion-letras-a-g_aae89d1d.wav";
-
-const songs: SongPractice[] = [
-  { title: "Blinding Lights", artist: "The Weeknd", level: "Intermedio suave", color: "#f4c7ad", url: "https://www.youtube.com/results?search_query=The+Weeknd+Blinding+Lights+official+video", description: "Buen ejercicio para ritmo, palabras cortas y el sonido /ai/.", vocabulary: [["lights", "luces", "láits"], ["night", "noche", "náit"], ["feel", "sentir", "fíil"]], practiceLine: ["I can see the lights.", "Puedo ver las luces.", "ai can sí de láits"] },
-  { title: "Save Your Tears", artist: "The Weeknd", level: "Intermedio", color: "#b9dcd7", url: "https://www.youtube.com/results?search_query=The+Weeknd+Save+Your+Tears+official+video", description: "Práctica de contracciones, emociones y frases con ritmo lento.", vocabulary: [["save", "guardar", "séiv"], ["tears", "lágrimas", "tírs"], ["sorry", "lo siento", "sóri"]], practiceLine: ["I am sorry.", "Lo siento.", "ai am sóri"] },
-  { title: "Call Out My Name", artist: "The Weeknd", level: "Intermedio", color: "#d8c5e8", url: "https://www.youtube.com/results?search_query=The+Weeknd+Call+Out+My+Name+official+video", description: "Ideal para practicar frases emocionales y vocales largas.", vocabulary: [["call", "llamar", "col"], ["name", "nombre", "néim"], ["heart", "corazón", "jart"]], practiceLine: ["Call out my name.", "Di mi nombre en voz alta.", "col aut mai néim"] },
-  { title: "Twinkle, Twinkle, Little Star", artist: "Canción tradicional", level: "Principiante · dominio público", color: "#ffe2a8", url: "https://www.youtube.com/results?search_query=Twinkle+Twinkle+Little+Star+traditional+song", description: "Canción muy repetitiva para empezar a cantar en inglés.", vocabulary: [["star", "estrella", "star"], ["little", "pequeño/a", "lírol"], ["wonder", "preguntarse", "uónder"]], practiceLine: ["The little star is bright.", "La estrellita es brillante.", "de lírol star is bráit"], publicDomain: true },
-];
-
-const translationPractice = [
-  ["Hello! My name is Hamilton.", "¡Hola! Me llamo Hamilton.", "english"],
-  ["¿Cómo estás? Estoy bien.", "How are you? I am fine.", "spanish"],
-  ["I study English every day.", "Estudio inglés cada día.", "english"],
-  ["Necesito agua, por favor.", "I need water, please.", "spanish"],
-  ["¿Dónde está la estación?", "Where is the station?", "spanish"],
-  ["I am learning English step by step.", "Estoy aprendiendo inglés paso a paso.", "english"],
-] as const;
-
-const normalize = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z\s]/g, " ").replace(/\s+/g, " ").trim();
-
-function getRecognitionConstructor() {
-  const browserWindow = window as typeof window & { SpeechRecognition?: new () => RecognitionLike; webkitSpeechRecognition?: new () => RecognitionLike };
-  return browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
+.hero:before{
+  content:"";
+  position:absolute;
+  width:420px;height:420px;
+  left:-180px;bottom:-230px;
+  border:1px solid rgba(199,161,90,.13);
+  border-radius:50%;
+  animation:orbFloat 12s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes orbFloat{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(80px,-35px,0) scale(1.12)}
 }
 
-function speak(text: string, rate = 0.78) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = rate;
-  utterance.pitch = 1.02;
-  const voices = window.speechSynthesis.getVoices().filter((candidate) => candidate.lang.toLowerCase().startsWith("en"));
-  const maleNames = /david|daniel|alex|mark|james|google us english male|jorge/i;
-  const voice = voices.find((candidate) => maleNames.test(candidate.name)) ?? voices[0];
-  if (voice) utterance.voice = voice;
-  window.speechSynthesis.speak(utterance);
+.site-nav{
+  transition:background .35s ease,box-shadow .35s ease,border-color .35s ease;
+}
+.site-nav:hover{
+  box-shadow:0 8px 30px rgba(10,34,25,.06);
+}
+.brand{
+  transition:transform .3s var(--ease-premium);
+}
+.brand:hover{transform:translateY(-1px)}
+
+.btn{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.btn:after{
+  content:"";
+  position:absolute;
+  top:0;left:-110%;
+  width:65%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.22),transparent);
+  transform:skewX(-18deg);
+  transition:left .65s var(--ease-premium);
+  pointer-events:none;
+}
+.btn:hover:after{left:145%}
+.btn-primary,.choice-band .btn{
+  transition:transform .3s var(--ease-premium),box-shadow .3s ease,background .3s ease;
+}
+.btn-primary:hover,.choice-band .btn:hover{
+  box-shadow:0 18px 38px rgba(18,61,44,.27);
 }
 
-function PracticeRow({ prompt, solution, onCorrect }: { prompt: string; solution: string; onCorrect: () => void }) {
-  const [value, setValue] = useState("");
-  const [state, setState] = useState<"idle" | "correct" | "wrong">("idle");
-  const check = () => {
-    const correct = normalize(value) === normalize(solution);
-    setState(correct ? "correct" : "wrong");
-    if (correct) onCorrect();
-  };
-  return <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#e3e9e1] bg-white/80 p-2"><span className="min-w-0 flex-1 text-sm font-bold text-[#526267]">{prompt}</span><input value={value} onChange={(event) => { setValue(event.target.value); setState("idle"); }} onKeyDown={(event) => event.key === "Enter" && check()} placeholder="respuesta" aria-label={`Respuesta para ${prompt}`} className="h-9 w-28 rounded-lg border border-[#dce3db] px-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#6fa9a2]" /><button onClick={check} className="h-9 rounded-lg bg-[#eaf4f1] px-3 text-xs font-black text-[#4f7772] hover:bg-[#d9ebe6]">Verificar</button>{state === "correct" && <span className="text-xs font-black text-[#478262]">✓ Bien</span>}{state === "wrong" && <span className="text-xs font-black text-[#bd6a50]">Intenta otra vez</span>}</div>;
+.eyebrow{
+  position:relative;
+  display:inline-block;
+}
+.eyebrow:after{
+  content:"";
+  display:inline-block;
+  width:25px;height:1px;
+  margin:0 0 3px 9px;
+  background:var(--gold);
+  transform-origin:left;
+  animation:lineReveal 1s var(--ease-premium) both;
+}
+@keyframes lineReveal{
+  from{transform:scaleX(0);opacity:0}
+  to{transform:scaleX(1);opacity:1}
 }
 
-export default function Home() {
-  const [level, setLevel] = useState(1);
-  const [unitId, setUnitId] = useState("1.1");
-  const [completed, setCompleted] = useState<string[]>([]);
-  const [answer, setAnswer] = useState("");
-  const [answerState, setAnswerState] = useState<"idle" | "correct" | "wrong">("idle");
-  const [listening, setListening] = useState(false);
-  const [heard, setHeard] = useState("");
-  const [voiceMessage, setVoiceMessage] = useState("Pulsa escuchar y después habla al micrófono. El ritmo sube suavemente cada vez que completas lecciones.");
-  const [voiceTarget, setVoiceTarget] = useState("");
-  const [aiEvaluation, setAiEvaluation] = useState<PronunciationEvaluation | null>(null);
-  const [aiEvaluating, setAiEvaluating] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [recordedUrl, setRecordedUrl] = useState("");
-  const [voiceSupported, setVoiceSupported] = useState(true);
-  const [help, setHelp] = useState(false);
-  const [selectedSong, setSelectedSong] = useState(songs[0]);
-  const [customSongLine, setCustomSongLine] = useState("");
-  const [customSongMeaning, setCustomSongMeaning] = useState("");
-  const [customSongPronunciation, setCustomSongPronunciation] = useState("");
-  const [languageHelp, setLanguageHelp] = useState<LanguageHelp | null>(null);
-  const [languageHelpLoading, setLanguageHelpLoading] = useState(false);
-  const [speechSpeed, setSpeechSpeed] = useState<"slow" | "medium" | "fast">("slow");
-  const recognitionRef = useRef<RecognitionLike | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const activeUnit = units.find((unit) => unit.id === unitId) ?? units[0];
-  const levelUnits = units.filter((unit) => Number(unit.id[0]) === level);
-  const levelComplete = levelUnits.filter((unit) => completed.includes(unit.id)).length;
-  const unlocked = (target: number) => target === 1 || completed.filter((id) => Number(id[0]) === target - 1).length === 4;
-  const totalProgress = Math.round((completed.length / units.length) * 100);
-  // Start slowly and increase in small steps as the learner completes lessons.
-  const practiceRate = Math.min(1.08, 0.78 + completed.length * 0.025);
-  const practiceRateLabel = practiceRate < 0.84 ? "lento" : practiceRate < 0.95 ? "natural" : "ágil";
-  const speechRate = speechSpeed === "slow" ? 0.72 : speechSpeed === "medium" ? 0.92 : 1.12;
-  const speakPractice = (text: string) => speak(text, speechRate);
-  const explainLanguage = trpc.languageHelper.explain.useMutation({
-    onMutate: () => setLanguageHelpLoading(true),
-    onSuccess: (result) => { setLanguageHelpLoading(false); setLanguageHelp(result); },
-    onError: () => setLanguageHelpLoading(false),
-  });
+.hero .eyebrow{animation:fadeUp .8s var(--ease-premium) both}
+.hero h1{animation:fadeUp 1s .08s var(--ease-premium) both}
+.hero-lead{animation:fadeUp .9s .18s var(--ease-premium) both}
+.hero-actions{animation:fadeUp .9s .28s var(--ease-premium) both}
+.trust{animation:fadeUp .9s .38s var(--ease-premium) both}
 
-  useEffect(() => {
-    setVoiceSupported(Boolean(getRecognitionConstructor()));
-    return () => { recognitionRef.current?.stop(); window.speechSynthesis?.cancel(); };
-  }, []);
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
-  useEffect(() => {
-    setAnswer(""); setAnswerState("idle"); setHeard(""); setAiEvaluation(null); setVoiceTarget(activeUnit.phrases[0][0]); setVoiceMessage("Pulsa escuchar y después habla al micrófono. El ritmo sube suavemente cada vez que completas lecciones.");
-  }, [unitId]);
+.hero h1 em{
+  background:linear-gradient(100deg,var(--gold) 15%,#f0dcae 45%,var(--gold) 75%);
+  background-size:220% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:goldShimmer 5s linear infinite;
+}
+@keyframes goldShimmer{
+  to{background-position:220% center}
+}
 
-  useEffect(() => {
-    const text = customSongLine.trim();
-    if (!text) { setLanguageHelp(null); setLanguageHelpLoading(false); return; }
-    const timer = window.setTimeout(() => explainLanguage.mutate({ text: text.slice(0, 160) }), 650);
-    return () => window.clearTimeout(timer);
-  }, [customSongLine]);
+.video-box{
+  transform:translateY(0);
+  transition:transform .6s var(--ease-premium),box-shadow .6s ease;
+}
+.video-box:hover{
+  transform:translateY(-5px);
+  box-shadow:0 40px 100px rgba(0,0,0,.3);
+}
+.video-meta{
+  animation:fadeUp .8s .2s var(--ease-premium) both;
+}
 
-  const chooseUnit = (unit: Unit) => { setUnitId(unit.id); setLevel(Number(unit.id[0])); };
-  const markComplete = () => setCompleted((old) => old.includes(activeUnit.id) ? old : [...old, activeUnit.id]);
-  const evaluatePronunciation = trpc.pronunciation.evaluate.useMutation({
-    onMutate: () => {
-      setAiEvaluating(true);
-      setAiEvaluation(null);
-      setVoiceMessage("La IA está comparando tu frase con el modelo…");
-    },
-    onSuccess: (result) => {
-      setAiEvaluating(false);
-      setAiEvaluation(result);
-      if (result.verdict === "excellent" || result.verdict === "good") {
-        markComplete();
-        speakPractice(result.verdict === "excellent" ? "Excellent!" : "Good job!");
-      }
-      setVoiceMessage(result.feedback);
-    },
-    onError: () => {
-      setAiEvaluating(false);
-      setVoiceMessage("No pude consultar la evaluación de IA. Puedes repetir ahora o seguir practicando con la guía del navegador.");
-    },
-  });
+.option,.step,.proof-image,.lead-form{
+  transition:
+    transform .55s var(--ease-premium),
+    box-shadow .45s ease,
+    border-color .35s ease;
+}
+.option:hover,.step:hover{
+  transform:translateY(-8px);
+}
+.option-icon{
+  transition:transform .45s var(--ease-premium),background .35s ease;
+}
+.option:hover .option-icon{
+  transform:rotate(-5deg) scale(1.08);
+  background:#e6f0ea;
+}
+.step-no{
+  transition:transform .45s var(--ease-premium);
+}
+.step:hover .step-no{
+  transform:translateX(5px);
+}
+.proof-image:hover{
+  transform:translateY(-6px);
+  box-shadow:0 35px 85px rgba(10,34,25,.18);
+}
 
-  const checkAnswer = () => {
-    const good = normalize(answer) === normalize(activeUnit.answer);
-    setAnswerState(good ? "correct" : "wrong");
-    if (good) { markComplete(); speakPractice("Correct!"); }
-  };
+.proof-image img{
+  transition:transform 1.2s var(--ease-premium);
+}
+.proof-image:hover img{transform:scale(1.035)}
 
-  const startVoiceCheck = (targetPhrase?: string) => {
-    const Recognition = getRecognitionConstructor();
-    if (!Recognition) { setVoiceSupported(false); setVoiceMessage("Prueba Chrome o Edge para activar el reconocimiento de voz."); return; }
-    recognitionRef.current?.stop();
-    const recognition = new Recognition();
-    recognition.lang = "en-US"; recognition.interimResults = false; recognition.maxAlternatives = 3;
-    recognition.onstart = () => { setListening(true); setHeard(""); setVoiceMessage("Te escucho… di una frase del ejemplo."); };
-    const expectedPhrase = targetPhrase || voiceTarget || activeUnit.phrases[0][0];
-    recognition.onresult = (event) => {
-      const transcript = event.results[0]?.[0]?.transcript ?? "";
-      setHeard(transcript);
-      evaluatePronunciation.mutate({ expectedPhrase, transcript });
-    };
-    recognition.onerror = (event) => { setListening(false); setVoiceMessage(event.error === "not-allowed" ? "Activa el permiso del micrófono en tu navegador." : "No pude escuchar esta vez. Revisa el micrófono y prueba de nuevo."); };
-    recognition.onend = () => setListening(false);
-    recognitionRef.current = recognition;
-    try { recognition.start(); } catch { setListening(false); }
-  };
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .8s var(--ease-premium),transform .8s var(--ease-premium);
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:none;
+}
+.reveal-delay-1{transition-delay:.08s}
+.reveal-delay-2{transition-delay:.16s}
+.reveal-delay-3{transition-delay:.24s}
 
-  const beginRecording = async () => {
-    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { setVoiceMessage("Tu navegador no permite grabar audio aquí. Usa Chrome o Edge."); return; }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      chunksRef.current = [];
-      recorder.ondataavailable = (event) => { if (event.data.size > 0) chunksRef.current.push(event.data); };
-      recorder.onstop = () => { stream.getTracks().forEach((track) => track.stop()); const url = URL.createObjectURL(new Blob(chunksRef.current, { type: "audio/webm" })); setRecordedUrl(url); setRecording(false); setVoiceMessage("Grabación lista. Escúchate y compárate con el modelo."); };
-      mediaRecorderRef.current = recorder; recorder.start(); setRecording(true); setVoiceMessage("Grabando… di una de las frases y pulsa detener.");
-    } catch { setVoiceMessage("No se concedió permiso para grabar. Puedes volver a intentarlo cuando quieras."); }
-  };
+.video-section:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(199,161,90,.55),transparent);
+  animation:dividerPulse 4s ease-in-out infinite;
+}
+@keyframes dividerPulse{
+  0%,100%{opacity:.25}
+  50%{opacity:1}
+}
 
-  const stopRecording = () => { if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop(); };
-  const reset = () => { setCompleted([]); setLevel(1); setUnitId("1.1"); setVoiceTarget(units[0].phrases[0][0]); setAnswer(""); setAnswerState("idle"); setRecordedUrl(""); };
+.float-wa{
+  transition:transform .3s var(--ease-premium),box-shadow .3s ease;
+  animation:waFloat 3.5s ease-in-out infinite;
+}
+.float-wa:hover{
+  animation:none;
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 18px 38px rgba(37,211,102,.25);
+}
+@keyframes waFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
+}
 
-  return (
-    <div className="min-h-screen bg-[#f7f5ef] text-[#17212b]">
-      <div className="pointer-events-none fixed -left-40 top-28 h-96 w-96 rounded-full bg-[#f6c4a5]/35 blur-3xl" />
-      <div className="pointer-events-none fixed right-0 top-0 h-[32rem] w-[32rem] rounded-full bg-[#c5dfe0]/45 blur-3xl" />
-      <header className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-        <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#17212b] text-[#ffd59a]"><span className="font-display text-xl font-bold">Aa</span></div><div><p className="font-display text-base font-bold">English, paso a paso</p><p className="text-[11px] font-bold uppercase tracking-[.2em] text-[#75808a]">curso interactivo</p></div></div>
-        <button onClick={() => setHelp((value) => !value)} className="flex items-center gap-2 rounded-full border border-[#dfe2dc] bg-white/70 px-3 py-2 text-xs font-bold text-[#52606b] hover:bg-white"><CircleHelp className="h-4 w-4" /> ¿Cómo funciona?</button>
-      </header>
+.faq details{
+  transition:padding-left .3s ease,border-color .3s ease;
+}
+.faq details:hover{
+  padding-left:8px;
+  border-color:rgba(199,161,90,.5);
+}
+.faq summary span{
+  transition:transform .3s var(--ease-premium);
+}
+.faq details[open] summary span{transform:rotate(45deg)}
 
-      <main className="relative mx-auto max-w-7xl px-5 pb-16 sm:px-8 lg:px-12">
-        <section className="grid gap-10 pb-10 pt-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end lg:pt-16">
-          <div><Badge className="mb-5 border-0 bg-[#17212b] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#ffe1b4]">Curso desde cero</Badge><h1 className="font-display max-w-3xl text-5xl font-extrabold leading-[.98] tracking-[-.06em] sm:text-7xl">Aprende inglés<br /><span className="text-[#de765e]">sin saltarte pasos.</span></h1><p className="mt-6 max-w-xl text-lg leading-8 text-[#65717a]">Lecciones, hojas prácticas, voz guía y ejercicios para avanzar desde la primera letra hasta conversaciones cotidianas.</p></div>
-          <div className="rounded-[2rem] border border-white/80 bg-white/75 p-5 shadow-[0_24px_60px_rgba(56,65,60,.08)] backdrop-blur sm:p-6"><div className="flex items-start justify-between"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#8c9898]">Avance total</p><p className="mt-2 font-display text-3xl font-extrabold">{completed.length} / {units.length} lecciones</p></div><div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#fff0dc] text-sm font-black text-[#c56b50]">{totalProgress}%</div></div><div className="mt-5 h-2 overflow-hidden rounded-full bg-[#e9ebe4]"><div className="h-full rounded-full bg-[#de765e] transition-all duration-500" style={{ width: `${Math.max(totalProgress, 3)}%` }} /></div><p className="mt-4 text-sm leading-6 text-[#768087]">Completa las cuatro lecciones de un nivel para desbloquear el siguiente.</p></div>
-        </section>
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
 
-        {help && <section className="mb-8 rounded-3xl border border-[#cfe2df] bg-[#eaf4f1] p-5 text-sm leading-6 text-[#486b68] sm:p-6"><div className="flex gap-3"><LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-[#5f9b96]" /><div><p className="font-bold text-[#285956]">Sobre la práctica de voz</p><p className="mt-1">El navegador convierte tu voz en una transcripción y la IA compara esa transcripción con la frase esperada para darte un puntaje y un consejo. No mide cada fonema como un profesor de fonética. La grabación que haces con “Grabar mi voz” queda en tu dispositivo y no se sube.</p><p className="mt-2 font-semibold">Usa Chrome o Edge y permite el micrófono cuando aparezca la solicitud.</p></div></div></section>}
+<style>
+.photo-section .proof-grid{align-items:center}
+.photo-section .proof-image{
+  width:min(100%, 410px);max-width:410px;justify-self:center;margin:auto;padding:7px;
+  background:linear-gradient(145deg,#fff,#eef4f0);border:1px solid rgba(199,161,90,.22);
+  border-radius:20px;box-shadow:0 24px 60px rgba(10,34,25,.13);
+}
+.photo-section .proof-image img{
+  width:100%;height:auto;aspect-ratio:4 / 4.35;object-fit:cover;object-position:center top;border-radius:14px;
+}
+.photo-section .proof-copy{max-width:570px}
+@media(max-width:850px){
+  .photo-section .proof-grid{gap:42px}
+  .photo-section .proof-image{width:min(78vw,340px);max-width:340px}
+}
+@media(max-width:480px){
+  .photo-section .proof-image{width:min(72vw,280px);max-width:280px;padding:5px;border-radius:16px}
+  .photo-section .proof-image img{border-radius:11px;aspect-ratio:4 / 4.45}
+}
+</style>
 
-        <section className="mb-8 grid gap-4 lg:grid-cols-3">
-          {levels.map((item) => { const open = unlocked(item.id); const current = level === item.id; return <button key={item.id} disabled={!open} onClick={() => { setLevel(item.id); setUnitId(`${item.id}.${item.id === 1 ? "1" : item.id === 2 ? "1" : "1"}`); }} className={`relative overflow-hidden rounded-[1.6rem] border p-5 text-left transition ${current ? "border-[#17212b] bg-[#17212b] text-white shadow-[0_18px_35px_rgba(23,33,43,.15)]" : open ? "border-[#e4e6df] bg-white/75 hover:-translate-y-1 hover:bg-white" : "cursor-not-allowed border-[#e7e8e3] bg-white/45 text-[#a0aaa8]"}`}><div className="absolute right-0 top-0 h-20 w-20 rounded-bl-[2rem] opacity-60" style={{ background: item.color }} /><div className="relative flex items-start justify-between"><div><p className={`text-xs font-bold uppercase tracking-[.16em] ${current ? "text-[#ffd59a]" : "text-[#899291]"}`}>{item.label} · {item.detail}</p><p className="mt-2 font-display text-2xl font-bold">{item.title}</p><p className={`mt-2 text-sm ${current ? "text-[#c5d0d0]" : "text-[#788486]"}`}>{level === item.id ? `${levelComplete}/4 completadas` : open ? "Desbloqueado" : "Completa el nivel anterior"}</p></div>{open ? <BookOpen className="relative h-5 w-5" /> : <LockKeyhole className="relative h-5 w-5" />}</div></button>; })}
-        </section>
+<style>
+.video-lazy{background:#071b14;cursor:pointer}
+.video-lazy>img{width:100%;height:100%;object-fit:cover;filter:brightness(.72);transition:transform 1s cubic-bezier(.22,1,.36,1),filter .5s ease}
+.video-lazy:hover>img{transform:scale(1.025);filter:brightness(.58)}
+.video-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(circle,rgba(7,27,20,.08),rgba(7,27,20,.32));color:#fff;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.video-overlay .video-play{position:static;transform:none;width:82px;height:82px;background:var(--gold);color:#fff;border:0;border-radius:50%;font-size:1.45rem;padding-left:4px;box-shadow:0 15px 45px rgba(0,0,0,.35);transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease}
+.video-lazy:hover .video-play{transform:scale(1.08);box-shadow:0 20px 55px rgba(0,0,0,.45)}
+.video-fallback{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.58);border:1px solid rgba(255,255,255,.22);border-radius:30px;padding:9px 15px;font-size:.74rem;font-weight:800;backdrop-filter:blur(8px);white-space:nowrap}
+.video-fallback:hover{background:rgba(0,0,0,.78)}
+</style>
 
-        <section className="grid gap-6 lg:grid-cols-[.72fr_1.28fr]">
-          <aside className="rounded-[2rem] bg-[#17212b] p-5 text-white shadow-[0_24px_60px_rgba(23,33,43,.16)] sm:p-6"><div className="flex items-center justify-between"><div><p className="text-[11px] font-bold uppercase tracking-[.18em] text-[#9caeb0]">{levels[level - 1].label}</p><h2 className="mt-2 font-display text-2xl font-bold">Lecciones</h2></div><Sparkles className="h-5 w-5 text-[#ffd59a]" /></div><div className="mt-6 space-y-2">{levelUnits.map((unit, index) => { const active = unit.id === unitId; const done = completed.includes(unit.id); return <button key={unit.id} onClick={() => chooseUnit(unit)} className={`flex w-full items-center gap-3 rounded-2xl p-3 text-left transition ${active ? "bg-[#ffd59a] text-[#17212b]" : "text-[#d5dddd] hover:bg-white/10"}`}><span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-xs font-black ${active ? "bg-[#17212b] text-[#ffd59a]" : "bg-white/10"}`}>{done ? <Check className="h-4 w-4" /> : index + 1}</span><span className="min-w-0"><span className="block text-sm font-bold">{unit.title}</span><span className={`block truncate text-xs ${active ? "text-[#665a48]" : "text-[#9caeb0]"}`}>{unit.summary}</span></span></button>; })}</div><button onClick={reset} className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-[#9caeb0] hover:text-white"><RotateCcw className="h-3.5 w-3.5" /> Reiniciar curso</button></aside>
+<style id="lumora-inspired-theme">
+:root{
+  --ink:#173F35;--green:#173F35;--green-2:#24584A;--deep:#102E27;--gold:#D4AF37;
+  --gold-light:#E4C65A;--cream:#F7F4EA;--paper:#ffffff;--sage:#EEF2EE;--muted:#6B756F;
+  --line:#DCE5DF;--shadow:0 22px 70px rgba(10,10,10,.10);--shadow-lg:0 35px 100px rgba(10,10,10,.18);
+  --lumora-ease:cubic-bezier(.22,1,.36,1);--lumora-fast:cubic-bezier(.2,.8,.2,1);
+}
+html{scroll-behavior:smooth}
+body{background:#fff;color:#111;font-family:'Onest',sans-serif;letter-spacing:-.005em}
+::selection{background:#173F35;color:#fff}
+.wrap{width:min(88rem,calc(100% - 40px));max-width:88rem}
+.section{padding:7rem 0}
+.eyebrow{
+  color:rgba(17,17,17,.62);font-size:.75rem;font-weight:500;letter-spacing:.02em;text-transform:none;
+  display:inline-flex;align-items:center;gap:.5rem;
+}
+.eyebrow:before{content:"";width:.375rem;height:.375rem;border-radius:999px;background:var(--gold);display:inline-block}
+.section-head{max-width:48rem;margin-bottom:3.5rem}
+.section-head h2{color:#111;font-size:clamp(2.25rem,5vw,4.5rem);font-weight:600;line-height:.98;letter-spacing:-.045em;margin:1rem 0 1.25rem}
+.section-head p{color:#8d8d8d;font-size:.95rem;max-width:40rem}
+.site-nav{
+  position:absolute;inset-inline:0;top:0;background:rgba(255,255,255,.48);border-bottom:1px solid rgba(230,229,226,.72);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:background .35s var(--lumora-ease),box-shadow .35s var(--lumora-ease);
+}
+.site-nav:hover{background:rgba(255,255,255,.72)}
+.nav-inner{height:76px;padding:0}
+.brand{
+  color:#111;font-weight:600;font-size:1.125rem;letter-spacing:-.02em;display:flex;align-items:center;gap:.55rem;
+  transition:transform .35s var(--lumora-ease);
+}
+.brand:before{content:"✦";color:var(--gold);font-size:1.15rem;transition:transform .45s var(--lumora-ease)}
+.brand:hover{transform:translateY(-1px)}
+.brand:hover:before{transform:rotate(18deg) scale(1.08)}
+.brand span{color:rgba(17,17,17,.45);font-family:'Onest',sans-serif;font-size:.68rem;letter-spacing:.04em;font-weight:500;text-transform:none;margin-left:.15rem}
+.nav-links{gap:1.75rem;color:rgba(17,17,17,.65);font-size:.8rem}
+.nav-links a{position:relative;transition:color .3s ease,transform .3s var(--lumora-ease)}
+.nav-links a:not(.btn):after{
+  content:"";position:absolute;left:0;right:100%;bottom:-5px;height:1px;background:#111;
+  transition:right .35s var(--lumora-ease);
+}
+.nav-links a:not(.btn):hover{color:#111;transform:translateY(-2px)}
+.nav-links a:not(.btn):hover:after{right:0}
+.btn{
+  min-height:2.75rem;border-radius:999px;padding:.375rem .375rem .375rem 1.35rem;font-size:.8rem;font-weight:500;letter-spacing:0;
+  transition:transform .35s var(--lumora-ease),box-shadow .35s var(--lumora-ease),background .3s ease,border-color .3s ease;
+}
+.btn:not(.btn-light):not(.btn-wa){background:#173F35;color:#fff;box-shadow:none}
+.btn-primary{background:#173F35;color:#fff;box-shadow:none}
+.btn-primary:hover{background:#173F35;transform:translateY(-3px);box-shadow:0 12px 28px rgba(10,10,10,.16)}
+.btn-light{border:1px solid #e6e5e2;background:#fff;color:#111}
+.btn-light:hover{border-color:#bcbab5;background:#f1f0ee;transform:translateY(-3px)}
+.hero-actions .btn:after{
+  content:"↗";width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:50%;
+  background:#f1f0ee;color:#111;margin-left:.35rem;font-size:.9rem;transition:transform .35s var(--lumora-ease);
+}
+.hero-actions .btn-light:after{background:#173F35;color:#fff}
+.hero-actions .btn:hover:after{transform:translate(2px,-2px)}
+.hero{
+  min-height:calc(100svh - 1px);display:flex;align-items:center;padding:9rem 0 5rem;
+  background:radial-gradient(circle at 88% 15%,rgba(177,95,44,.10),transparent 24%),linear-gradient(180deg,#f1f0ee 0%,#fff 72%);
+}
+.hero:after{width:34rem;height:34rem;right:-18rem;top:-15rem;border:1px solid rgba(177,95,44,.16);box-shadow:inset 0 0 0 5rem rgba(255,255,255,.15)}
+.hero-grid{max-width:88rem;width:100%;grid-template-columns:minmax(0,7fr) minmax(18rem,5fr);gap:3rem}
+.hero-grid>div:first-child{max-width:58rem}
+.hero h1{font-family:'Onest',sans-serif;font-size:clamp(3.4rem,7vw,7rem);font-weight:600;line-height:.91;letter-spacing:-.07em;color:#111;margin:1.25rem 0 1.75rem}
+.hero h1 em{color:#8d8d8d}
+.hero-lead{max-width:39rem;color:#666;font-size:1.05rem;line-height:1.65}
+.trust{gap:1.4rem;color:#8d8d8d;font-size:.75rem}
+.trust span:before{color:var(--gold)}
+.hero:before{
+  content:"OMNILIFE";position:absolute;right:-.5rem;bottom:3rem;font-size:clamp(6rem,13vw,13rem);line-height:.8;
+  font-weight:700;letter-spacing:-.08em;color:rgba(17,17,17,.035);pointer-events:none;user-select:none;
+}
+.choice-band{background:#173F35;padding:1.35rem 0;border-radius:0 0 2rem 2rem}
+.choice-band strong{font-size:.95rem;font-weight:500}
+.choice-band p{color:rgba(255,255,255,.48);font-size:.78rem}
+.choice-band .btn{background:#f1f0ee;color:#111;padding:.375rem .375rem .375rem 1.25rem}
+.choice-band .btn:after{content:"→";width:2.25rem;height:2.25rem;border-radius:50%;display:grid;place-items:center;background:#173F35;color:#fff}
+.video-section{padding:7rem 0;background:#fff;color:#111}
+.video-section:before{width:38rem;height:38rem;border-color:rgba(177,95,44,.10);right:-18rem;top:-18rem}
+.video-section .section-head h2{color:#111}
+.video-section .section-head p{color:#8d8d8d}
+.video-box{border-radius:2rem;border:1px solid rgba(17,17,17,.08);box-shadow:0 25px 80px rgba(10,10,10,.14)}
+.video-play{width:4.5rem;height:4.5rem;background:#173F35;color:#fff;box-shadow:0 18px 40px rgba(0,0,0,.25);transition:transform .45s var(--lumora-ease),background .3s ease}
+.video-box:hover .video-play{transform:translate(-50%,-50%) scale(1.08);background:var(--gold)}
+.video-meta{color:#8d8d8d}
+.video-meta strong{color:var(--gold)}
+.photo-section{background:#fff}
+.proof-grid{gap:5rem}
+.proof-image{border-radius:2rem;border:1px solid #e6e5e2;box-shadow:none;background:#f1f0ee;overflow:hidden}
+.proof-image img{transition:transform .9s var(--lumora-ease);filter:saturate(.94)}
+.proof-image:hover img{transform:scale(1.035)}
+.proof-copy h2{font-family:'Onest',sans-serif;font-size:clamp(2.3rem,4.6vw,4.5rem);font-weight:600;letter-spacing:-.055em;color:#111}
+.quote{border-left:1px solid var(--gold);color:#666}
+.proof-points{gap:1rem}
+.proof-points div{padding:.85rem 0;border-top:1px solid #e6e5e2;display:grid;grid-template-columns:minmax(9rem,13rem) 1fr;gap:1rem}
+.proof-points div:last-child{border-bottom:1px solid #e6e5e2}
+.proof-points b{font-weight:500;color:#111}
+.proof-points span{color:#8d8d8d}
+.options{background:#fff}
+.options-grid{gap:1rem}
+.option{
+  border:1px solid #e6e5e2;border-radius:2rem;padding:2rem;background:#fff;min-height:27rem;
+  transition:transform .45s var(--lumora-ease),box-shadow .45s var(--lumora-ease),background .35s ease,color .35s ease,border-color .35s ease;
+}
+.option:hover{transform:translateY(-8px);box-shadow:0 24px 60px rgba(10,10,10,.10);border-color:#d0cec9}
+.option.featured{background:#173F35;color:#fff;border-color:#173F35;box-shadow:none;transform:translateY(-10px)}
+.option.featured:hover{transform:translateY(-15px);box-shadow:0 28px 70px rgba(10,10,10,.20)}
+.option-badge{top:1.25rem;right:1.25rem;border-radius:999px;padding:.45rem .8rem;background:var(--gold);color:#fff;font-size:.65rem;font-weight:600}
+.option-icon{width:2.75rem;height:2.75rem;border-radius:999px;background:#f1f0ee;color:#111;margin-bottom:1.5rem}
+.option.featured .option-icon{background:#fff;color:#111}
+.option h3{font-family:'Onest',sans-serif;font-size:1.65rem;font-weight:500;color:#111}
+.option.featured h3{color:#fff}
+.option .price{color:var(--gold);font-weight:600}
+.option p,.option ul{color:#8d8d8d}
+.option.featured p,.option.featured ul{color:rgba(255,255,255,.58)}
+.option li:before{color:var(--gold)}
+.option .btn{border-radius:999px}
+.option.featured .btn-primary{background:#f1f0ee;color:#111}
+.option.featured .btn-primary:after{content:"↗";width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:50%;background:#173F35;color:#fff}
+.small-note{color:#8d8d8d}
+.process{background:#fff}
+.process-grid{gap:.75rem}
+.step{border:0;border-radius:999px;background:#f1f0ee;padding:1.5rem 1.75rem;min-height:9rem;transition:transform .4s var(--lumora-ease),background .35s ease}
+.step:nth-child(2){background:linear-gradient(135deg,#E4C65A,#97501f);color:#fff}
+.step:nth-child(3){background:#173F35;color:#fff}
+.step:hover{transform:translateY(-6px) scale(1.015)}
+.step-no{font-size:1rem;color:rgba(17,17,17,.4);font-weight:500}
+.step:nth-child(2) .step-no,.step:nth-child(3) .step-no{color:rgba(255,255,255,.55)}
+.step h3{color:#111;font-size:1.25rem;font-weight:500;margin:.7rem 0 .35rem}
+.step:nth-child(2) h3,.step:nth-child(3) h3{color:#fff}
+.step p{color:#8d8d8d;font-size:.8rem}
+.step:nth-child(2) p,.step:nth-child(3) p{color:rgba(255,255,255,.58)}
+.form-section{background:#fff;color:#111;padding-top:5rem}
+.form-grid{background:#173F35;border-radius:2rem;padding:4rem;color:#fff;box-shadow:none}
+.form-copy h2{font-family:'Onest',sans-serif;font-weight:600;letter-spacing:-.055em}
+.form-copy p{color:rgba(255,255,255,.55)}
+.form-copy .eyebrow{color:rgba(255,255,255,.68)}
+.form-copy .eyebrow:before{background:var(--gold)}
+.mini-guarantee{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.62);border-radius:1rem}
+.lead-form{border-radius:1.5rem;padding:1.5rem;box-shadow:none}
+.mode-tabs button{border-radius:999px;background:#f1f0ee}
+.mode-tabs button.active{background:#173F35}
+.field input,.field textarea{border-radius:.875rem;background:#f7f6f4}
+.field input:focus,.field textarea:focus{border-color:#aaa;box-shadow:0 0 0 3px rgba(177,95,44,.10)}
+.form-submit{padding-left:1.35rem}
+.consent{color:#8d8d8d}
+.faq{max-width:58rem}
+.faq details{border-top:1px solid #e6e5e2;border-bottom:0;padding:0}
+.faq details:last-child{border-bottom:1px solid #e6e5e2}
+.faq summary{padding:1.35rem 0;font-size:1rem;font-weight:500;color:#111;transition:padding-left .35s var(--lumora-ease)}
+.faq details:hover summary{padding-left:.5rem}
+.faq summary span{font-size:1.2rem;color:var(--gold)}
+.faq p{color:#8d8d8d;padding:0 2.5rem 1.35rem 0}
+.footer{background:#173F35;border-radius:2rem 2rem 0 0;padding:5rem 0 3rem;text-align:left}
+.footer p{color:rgba(255,255,255,.48)}
+.footer a{text-decoration:none}
+.footer .disclaimer{max-width:48rem;margin:1.25rem auto 0}
+.float-wa{right:1.5rem;bottom:1.5rem;min-height:3.5rem;padding:.5rem 1rem .5rem .5rem;background:#173F35;border:1px solid rgba(255,255,255,.18);color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.20)}
+.float-wa:hover{transform:translateY(-4px) scale(1.015);background:#111;box-shadow:0 24px 55px rgba(0,0,0,.26)}
+.float-wa::before{width:2.5rem;height:2.5rem;flex-basis:2.5rem;background-color:#25d366}
+.reveal{opacity:0;transform:translateY(2rem);transition:opacity .8s var(--lumora-ease),transform .8s var(--lumora-ease)}
+.reveal.is-visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.09s}
+.reveal-delay-2{transition-delay:.18s}
+.reveal-delay-3{transition-delay:.27s}
+.hero .eyebrow,.hero h1,.hero .hero-lead,.hero .hero-actions,.hero .trust{animation:lumoraRise .85s var(--lumora-ease) both}
+.hero .eyebrow{animation-delay:.12s}
+.hero h1{animation-delay:.20s}
+.hero .hero-lead{animation-delay:.34s}
+.hero .hero-actions{animation-delay:.46s}
+.hero .trust{animation-delay:.58s}
+@keyframes lumoraRise{from{opacity:0;transform:translateY(1.25rem)}to{opacity:1;transform:none}}
+@keyframes lumoraFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.video-section .video-box,.proof-image,.option,.step,.lead-form{will-change:transform}
+.video-section .video-box{animation:lumoraFloat 7s ease-in-out infinite}
+.option:nth-child(2){transition-delay:.04s}
+.option:nth-child(3){transition-delay:.08s}
+@media(prefers-reduced-motion:reduce){
+  .hero .eyebrow,.hero h1,.hero .hero-lead,.hero .hero-actions,.hero .trust,.video-section .video-box{animation:none!important}
+  .reveal{opacity:1;transform:none;transition:none!important}
+}
+@media(max-width:850px){
+  .site-nav{position:sticky}
+  .hero{min-height:auto;padding:8rem 0 5rem}
+  .hero-grid{grid-template-columns:1fr}
+  .hero:before{font-size:6rem;bottom:1.5rem}
+  .process-grid{grid-template-columns:1fr}
+  .step{border-radius:2rem;min-height:auto}
+  .form-grid{padding:2rem}
+  .proof-points div{grid-template-columns:1fr;gap:.35rem}
+}
+@media(max-width:480px){
+  .wrap{width:min(100% - 28px,88rem)}
+  .hero h1{font-size:3.05rem}
+  .section{padding:5rem 0}
+  .choice-band{border-radius:0 0 1.5rem 1.5rem}
+  .video-box{border-radius:1.25rem}
+  .option,.step{border-radius:1.5rem}
+  .form-grid{border-radius:1.5rem;padding:1.25rem}
+  .float-wa{right:1rem;bottom:1rem}
+}
+</style>
 
-          <div className="space-y-6 rounded-[2rem] border border-[#e4e6df] bg-white/90 p-5 shadow-[0_24px_60px_rgba(56,65,60,.08)] sm:p-8"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#9ba5a4]">Lección {activeUnit.id}</p><h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight">{activeUnit.title}</h2></div><span className="rounded-full bg-[#f3f4ef] px-3 py-1 text-xs font-bold text-[#899291]">{completed.includes(activeUnit.id) ? "Completada" : "En progreso"}</span></div><p className="max-w-2xl text-base leading-7 text-[#69777d]">{activeUnit.summary}</p><div className="flex flex-wrap gap-2">{activeUnit.topics.map((topic) => <span key={topic} className="rounded-full border border-[#e5e8e2] bg-[#fafbf8] px-3 py-1.5 text-xs font-bold text-[#66757a]">{topic}</span>)}</div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{activeUnit.phrases.map(([english, spanish, pronunciation]) => <div key={english} className={`rounded-2xl border p-4 ${voiceTarget === english ? "border-[#6fa9a2] bg-[#f0f8f5]" : "border-[#e7e9e3] bg-[#fafbf8]"}`}><button onClick={() => { setVoiceTarget(english); speakPractice(english); setVoiceMessage("Frase seleccionada. Ahora pulsa Hablar y repítela."); }} className="flex items-start gap-2 text-left font-display text-base font-bold text-[#273943] hover:text-[#de765e]"><Volume2 className="mt-0.5 h-4 w-4 shrink-0 text-[#de765e]" />{english}</button><p className="mt-2 text-sm text-[#87918f]">{spanish}</p><p className="mt-3 rounded-xl bg-[#fff0dc] px-3 py-2 text-xs font-bold text-[#a9614c]"><span className="mr-1 uppercase tracking-wide text-[10px] text-[#c27a5e]">Pronuncia:</span> {pronunciation}</p></div>)}</div>
-            {activeUnit.id === "1.1" && <div className="rounded-3xl border border-[#f1dfc7] bg-[#fffaf1] p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.17em] text-[#ba8061]">Alfabeto inicial</p><p className="mt-1 text-sm text-[#7d746b]">Toca una tarjeta para oír la letra y una palabra.</p></div><audio controls src={guidedAudio} className="h-9 w-full sm:w-64" /></div><div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-7">{alphabet.map(([letter, word, meaning, hint]) => <button key={letter} onClick={() => speakPractice(`${letter}. ${word}.`)} className="rounded-2xl border border-[#f0dfc8] bg-white p-3 text-left transition hover:-translate-y-0.5 hover:border-[#de765e]"><span className="font-display text-2xl font-black text-[#de765e]">{letter}</span><span className="mt-1 block text-sm font-bold text-[#34474c]">{word}</span><span className="mt-1 block text-[10px] font-semibold text-[#9a9188]">{hint}</span><span className="sr-only">{meaning}</span></button>)}</div></div>}
-            <div className="grid gap-5 rounded-3xl bg-[#f6f8f3] p-5 lg:grid-cols-[1fr_1fr]"><div><p className="text-xs font-bold uppercase tracking-[.17em] text-[#8e9a96]">Práctica escrita</p><p className="mt-3 text-sm font-semibold text-[#526267]">Completa la frase principal:</p><p className="mt-2 font-display text-2xl font-bold text-[#17212b]">{activeUnit.exercise}</p><div className="mt-4 flex gap-2"><input value={answer} onChange={(event) => { setAnswer(event.target.value); setAnswerState("idle"); }} onKeyDown={(event) => event.key === "Enter" && checkAnswer()} placeholder="Escribe aquí" className="h-11 min-w-0 flex-1 rounded-xl border border-[#dce3db] bg-white px-3 text-sm font-semibold outline-none ring-[#6fa9a2] focus:ring-2" /><Button onClick={checkAnswer} className="h-11 rounded-xl bg-[#17212b] px-4 font-bold text-[#ffe2b4] hover:bg-[#273743]">Comprobar</Button></div><p className={`mt-3 text-sm font-bold ${answerState === "correct" ? "text-[#478262]" : answerState === "wrong" ? "text-[#bd6a50]" : "text-[#87918f]"}`}>{answerState === "correct" ? "¡Correcto! Lección marcada como practicada." : answerState === "wrong" ? "Todavía no. Revisa la frase y vuelve a probar." : "Escribe una palabra y pulsa comprobar."}</p><div className="mt-5 border-t border-[#e1e7df] pt-4"><p className="text-xs font-bold uppercase tracking-[.17em] text-[#8e9a96]">Más para completar</p><div className="mt-3 space-y-2">{activeUnit.practiceItems.map(([prompt, solution]) => <PracticeRow key={prompt} prompt={prompt} solution={solution} onCorrect={markComplete} />)}</div></div></div><div className="border-t border-[#e1e7df] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0"><p className="text-xs font-bold uppercase tracking-[.17em] text-[#8e9a96]">Práctica oral</p><div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-xs font-bold uppercase tracking-wide text-[#8e9a96]">Voz masculina · velocidad</span>{([['slow', 'Lenta'], ['medium', 'Intermedia'], ['fast', 'Rápida']] as const).map(([value, label]) => <button key={value} onClick={() => setSpeechSpeed(value)} className={`rounded-full px-3 py-1.5 text-xs font-black transition ${speechSpeed === value ? "bg-[#17212b] text-[#ffe2b4]" : "border border-[#dce3db] bg-white text-[#657477] hover:bg-[#eaf4f1]"}`}>{label}</button>)}</div><p className="mt-3 text-sm leading-6 text-[#68777a]">Elige cualquiera de los ejemplos de arriba, escucha el modelo y repítelo. La tarjeta verde es la frase que evaluará el micrófono. Velocidad seleccionada: {speechSpeed === "slow" ? "lenta" : speechSpeed === "medium" ? "intermedia" : "rápida"}.</p><div className="mt-4 flex flex-wrap gap-2"><Button onClick={() => speakPractice(voiceTarget || activeUnit.phrases[0][0])} variant="outline" className="h-10 rounded-xl border-[#dce3db] bg-white font-bold"><Headphones className="mr-2 h-4 w-4 text-[#de765e]" /> Escuchar</Button><Button onClick={listening ? () => recognitionRef.current?.stop() : () => startVoiceCheck()} className={`h-10 rounded-xl font-bold ${listening ? "bg-[#de765e] hover:bg-[#c8654f]" : "bg-[#6fa9a2] hover:bg-[#5f9b96]"}`}><Mic className="mr-2 h-4 w-4" /> {listening ? "Detener" : "Hablar"}</Button></div>{heard && <p className="mt-3 text-xs font-bold text-[#7c8a87]">Reconocido: “{heard}”</p>}<p className="mt-3 text-xs leading-5 text-[#8a9693]">{voiceMessage}</p></div></div>
-            <div className="rounded-3xl border border-[#dfe8e5] bg-[#f3f8f5] p-5"><p className="text-xs font-bold uppercase tracking-[.17em] text-[#5f9b96]">Traducción de oraciones completas</p><p className="mt-2 text-sm leading-6 text-[#68777a]">Lee la frase y escribe debajo su traducción. Hay ejercicios en las dos direcciones: inglés → español y español → inglés.</p><div className="mt-4 grid gap-3 md:grid-cols-2">{translationPractice.map(([source, answer, direction]) => <TranslationRow key={source} source={source} answer={answer} direction={direction} onCorrect={markComplete} />)}</div></div>
-            {aiEvaluating && <div className="flex items-center gap-3 rounded-2xl border border-[#d7e8e4] bg-[#f0f8f5] p-4 text-sm font-bold text-[#4f7772]"><span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#6fa9a2]" /> La IA está evaluando tu pronunciación…</div>}
-            {aiEvaluation && <div className={`rounded-2xl border p-4 ${aiEvaluation.verdict === "practice" ? "border-[#f3c7b5] bg-[#fff5ef]" : "border-[#b8ddcb] bg-[#eff9f2]"}`}><div className="flex items-start gap-3"><div className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-black ${aiEvaluation.verdict === "practice" ? "bg-[#f9d9ca] text-[#bd6a50]" : "bg-[#ccebd9] text-[#3b8061]"}`}>{aiEvaluation.score}</div><div><p className="text-sm font-black text-[#34464b]">{aiEvaluation.verdict === "excellent" ? "¡Excelente!" : aiEvaluation.verdict === "good" ? "¡Muy bien!" : "Sigue practicando"}</p><p className="mt-1 text-sm leading-6 text-[#68777a]">{aiEvaluation.feedback}</p><p className="mt-2 text-xs font-bold text-[#7d8c88]">Siguiente paso: {aiEvaluation.nextStep}</p></div></div><p className="mt-3 border-t border-black/5 pt-3 text-[11px] leading-5 text-[#8a9693]">{aiEvaluation.limitation}</p></div>}
-            <div className="flex flex-col gap-3 sm:flex-row"><Button onClick={recording ? stopRecording : beginRecording} className={`h-12 flex-1 rounded-xl font-black ${recording ? "bg-[#de765e] hover:bg-[#c8654f]" : "bg-[#fff0dc] text-[#b8614a] hover:bg-[#ffe5c8]"}`}>{recording ? <><Square className="mr-2 h-4 w-4 fill-current" /> Detener grabación</> : <><Waves className="mr-2 h-5 w-5" /> Grabar mi voz</>}</Button>{recordedUrl && <audio controls src={recordedUrl} className="h-12 w-full rounded-xl sm:w-64" />}<Button onClick={markComplete} variant="outline" className="h-12 rounded-xl border-[#dce3db] bg-white font-bold text-[#526267]">{completed.includes(activeUnit.id) ? <><CheckCircle2 className="mr-2 h-4 w-4 text-[#5f9b96]" /> Practicada</> : "Marcar como practicada"}</Button></div>
-            {!voiceSupported && <p className="text-center text-xs font-semibold text-[#bd6a50]">El reconocimiento automático no está disponible en este navegador. La voz guía y la grabación siguen disponibles.</p>}
-          </div>
-        </section>
+<style id="faq-footer-upgrade">
+.faq{max-width:70rem}
+.faq-intro{max-width:42rem;margin:.8rem auto 0;color:var(--muted);line-height:1.7}
+.faq-list{margin-top:2.8rem;border-top:1px solid rgba(23,63,53,.14)}
+.faq-list details{border-bottom:1px solid rgba(23,63,53,.14);padding:0;transition:border-color .35s ease, background .35s ease}
+.faq-list details[open]{background:rgba(247,244,235,.42)}
+.faq-list summary{display:grid;grid-template-columns:3rem 1fr auto;align-items:center;gap:1rem;padding:1.35rem 1rem;list-style:none;cursor:pointer;color:var(--ink);font-size:1.02rem;font-weight:650}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-number{color:var(--gold);font-size:.72rem;font-weight:800;letter-spacing:.12em}
+.faq-question{line-height:1.45}
+.faq-icon{width:2.15rem;height:2.15rem;display:grid;place-items:center;border:1px solid rgba(23,63,53,.18);border-radius:50%;color:var(--green);font-size:1.25rem;font-weight:400;transition:transform .35s var(--lumora-ease),background .35s ease,color .35s ease}
+.faq-list details[open] .faq-icon{transform:rotate(45deg);background:var(--green);color:#fff}
+.faq-answer{padding:0 4.15rem 1.5rem}
+.faq-answer p{margin:0;max-width:52rem;color:#65716c;line-height:1.75}
+.faq-cta{margin-top:2.5rem;padding:1.5rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;background:var(--green);color:#fff;border-radius:1.5rem;box-shadow:0 20px 50px rgba(10,34,25,.12)}
+.faq-cta div{display:flex;flex-direction:column;gap:.3rem}
+.faq-cta strong{font-size:1rem}
+.faq-cta span{color:rgba(255,255,255,.68);font-size:.88rem}
+.faq-cta .btn{flex-shrink:0;background:#fff;color:var(--green);border-color:#fff}
+.faq-cta .btn:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.footer{margin-top:2rem;overflow:hidden;position:relative}
+.footer::before{content:"";position:absolute;width:22rem;height:22rem;right:-8rem;top:-10rem;border:1px solid rgba(255,255,255,.08);border-radius:50%;box-shadow:0 0 0 4rem rgba(255,255,255,.018),0 0 0 8rem rgba(255,255,255,.012);pointer-events:none}
+.footer-inner{position:relative;z-index:1}
+.footer-brand{display:flex;align-items:center;gap:1rem;margin-bottom:3rem}
+.footer-mark{width:3.2rem;height:3.2rem;display:grid;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:1rem;color:var(--gold-light);font-size:.8rem;font-weight:800;letter-spacing:.08em}
+.footer-brand strong{display:block;color:#fff;font-size:1.05rem}
+.footer-brand p{margin:.3rem 0 0}
+.footer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding-bottom:3rem}
+.footer-col{display:flex;flex-direction:column;align-items:flex-start;gap:.7rem}
+.footer-label{margin-bottom:.35rem;color:var(--gold-light);font-size:.68rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.footer-col a{color:rgba(255,255,255,.68);transition:color .25s ease,transform .25s ease}
+.footer-col a:hover{color:#fff;transform:translateX(4px)}
+.footer-divider{height:1px;background:rgba(255,255,255,.12)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;padding-top:1.7rem}
+.footer-bottom .disclaimer{margin:0;max-width:55rem;font-size:.76rem;line-height:1.65;text-align:left}
+.footer-copy{margin:0;white-space:nowrap;color:rgba(255,255,255,.38)!important;font-size:.72rem!important}
+@media(max-width:700px){
+  .faq-list summary{grid-template-columns:2.2rem 1fr auto;gap:.7rem;padding:1.2rem .4rem}
+  .faq-answer{padding:0 2.9rem 1.3rem}
+  .faq-cta{align-items:flex-start;flex-direction:column;padding:1.35rem}
+  .faq-cta .btn{width:100%;justify-content:center}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem 1rem}
+  .footer-bottom{flex-direction:column;align-items:flex-start;gap:.8rem}
+  .footer-copy{white-space:normal}
+}
+@media(max-width:450px){
+  .footer-grid{grid-template-columns:1fr}
+  .faq-number{font-size:.65rem}
+  .faq-question{font-size:.94rem}
+  .faq-icon{width:2rem;height:2rem}
+}
+</style>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-3"><div className="rounded-3xl border border-[#e4e6df] bg-white/65 p-5"><span className="font-mono text-xs font-bold text-[#de765e]">01</span><h3 className="mt-3 font-display text-lg font-bold">Escucha el modelo</h3><p className="mt-2 text-sm leading-6 text-[#788486]">Pulsa el icono de volumen en cualquier frase.</p></div><div className="rounded-3xl border border-[#e4e6df] bg-white/65 p-5"><span className="font-mono text-xs font-bold text-[#de765e]">02</span><h3 className="mt-3 font-display text-lg font-bold">Escribe y completa</h3><p className="mt-2 text-sm leading-6 text-[#788486]">Cada lección tiene una práctica escrita con respuesta.</p></div><div className="rounded-3xl border border-[#e4e6df] bg-white/65 p-5"><span className="font-mono text-xs font-bold text-[#de765e]">03</span><h3 className="mt-3 font-display text-lg font-bold">Grábate y escucha</h3><p className="mt-2 text-sm leading-6 text-[#788486]">Compara tu voz con el modelo y repite sin prisa.</p></div></section>
+<style id="responsive-hardening">
+html{scroll-padding-top:88px}
+body{min-width:320px;overflow-x:hidden}
+.hero h1,.section-head h2,.proof-copy h2,.form-copy h2{font-family:'Onest',system-ui,-apple-system,sans-serif}
+.option h3,.step-no{font-family:'Onest',system-ui,-apple-system,sans-serif}
+.btn{min-width:0;touch-action:manipulation}
+.site-nav{isolation:isolate}
+.mobile-nav{width:44px;height:44px;padding:0;border-radius:50%;display:none;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.mobile-nav span{display:block;width:19px;height:2px;border-radius:2px;background:currentColor;transition:transform .3s var(--ease-premium),opacity .2s ease}
+.mobile-nav.is-open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.mobile-nav.is-open span:nth-child(2){opacity:0}
+.mobile-nav.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobile-menu{display:none}
+.mobile-menu a{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:13px 4px;border-bottom:1px solid rgba(23,63,53,.10);font-size:.95rem;color:#173f35}
+.mobile-menu a:last-child{border-bottom:0}
+.mobile-menu-cta{margin-top:10px;padding:13px 18px!important;border:0!important;border-radius:999px;background:#173f35;color:#fff!important}
+.mobile-menu[hidden]{display:none!important}
+@media(max-width:850px){
+  .site-nav{position:sticky;top:0;background:rgba(251,250,246,.94)}
+  .nav-inner{height:68px}
+  .mobile-nav{display:flex;border:1px solid rgba(23,63,53,.14);background:rgba(255,255,255,.72);color:var(--green)}
+  .mobile-menu{display:block;position:absolute;left:0;right:0;top:100%;padding:8px 20px 18px;background:rgba(251,250,246,.98);border-bottom:1px solid rgba(23,63,53,.10);box-shadow:0 20px 40px rgba(7,27,20,.12);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:mobileMenuIn .28s var(--ease-premium) both}
+  .mobile-menu[hidden]{display:none!important}
+  .brand{max-width:calc(100% - 58px);line-height:1.1}
+  .brand span{display:block;margin-left:0;margin-top:3px;font-size:.54rem}
+  .hero{padding:82px 0 88px}
+  .hero-grid{max-width:none}
+  .choice-band-inner{gap:16px}
+  .video-box{border-radius:14px}
+  .video-overlay .video-play{width:68px;height:68px}
+  .video-meta{gap:8px}
+  .proof-grid{gap:34px}
+  .form-grid{gap:28px}
+  .lead-form{width:100%}
+  .cookie-notice{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch;gap:12px;max-height:min(72vh,520px);overflow:auto}
+  .cookie-actions{width:100%}
+  .cookie-actions button{flex:1;min-height:44px}
+}
+@media(max-width:600px){
+  .wrap{width:min(100% - 28px,1160px)}
+  .section{padding:68px 0}
+  .hero{padding:68px 0 76px}
+  .hero h1{font-size:clamp(2.65rem,13vw,4rem);letter-spacing:-.055em}
+  .hero-lead{font-size:1rem;line-height:1.55}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .hero-actions .btn{width:100%;min-height:50px}
+  .trust{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;font-size:.75rem}
+  .choice-band{padding:22px 0}
+  .choice-band .btn{width:100%;min-height:48px}
+  .section-head{margin-bottom:30px}
+  .section-head h2{font-size:clamp(2rem,10vw,3rem)}
+  .video-section{padding:68px 0}
+  .video-box{aspect-ratio:16/10}
+  .video-overlay .video-play{width:62px;height:62px;font-size:1.2rem}
+  .video-overlay span{font-size:.68rem}
+  .video-fallback{max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;bottom:10px}
+  .video-meta span{display:block}
+  .options-grid,.process-grid{gap:14px}
+  .option{padding:24px;min-height:0}
+  .option-badge{right:14px}
+  .proof-image{width:100%!important;max-width:330px;margin:0 auto}
+  .proof-copy h2,.form-copy h2{font-size:clamp(2rem,10vw,3rem)}
+  .proof-points div{display:grid;grid-template-columns:1fr;gap:3px}
+  .proof-copy .btn{width:100%;min-height:50px}
+  .mode-tabs{grid-template-columns:1fr!important}
+  .mode-tabs button{min-height:44px}
+  .lead-form{padding:18px}
+  .field input,.field textarea{font-size:16px;min-height:48px}
+  .field textarea{min-height:110px}
+  .form-submit{min-height:52px}
+  .faq-answer{padding-left:0!important;padding-right:2.8rem!important}
+  .faq-cta{margin-top:24px}
+  .faq-cta .btn{min-height:50px}
+  .float-wa{max-width:calc(100vw - 28px)}
+  .float-wa span{white-space:nowrap}
+}
+@media(max-width:390px){
+  .wrap{width:calc(100% - 24px)}
+  .brand{font-size:.98rem}
+  .brand span{font-size:.49rem}
+  .hero h1{font-size:2.45rem}
+  .trust{grid-template-columns:1fr}
+  .video-box{aspect-ratio:16/11}
+  .faq-list summary{grid-template-columns:2rem 1fr 2rem!important;gap:.5rem!important}
+  .faq-number{font-size:.58rem!important}
+  .faq-question{font-size:.9rem!important}
+}
+@keyframes mobileMenuIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.mobile-menu{animation:none}}
+</style>
 
-        <section className="mt-10 rounded-[2rem] border border-[#eadfd5] bg-[#fffaf5] p-5 shadow-[0_24px_60px_rgba(56,65,60,.06)] sm:p-8"><div className="flex flex-wrap items-start justify-between gap-4"><div><Badge className="border-0 bg-[#17212b] text-[#ffe1b4]">Canta y aprende</Badge><h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight">Inglés con canciones</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#6f7777]">Escoge una canción, estudia vocabulario y practica una frase educativa con traducción y pronunciación hispana. En las canciones comerciales usamos enlaces de escucha y no reproducimos letras completas protegidas.</p></div><Music2 className="h-8 w-8 text-[#de765e]" /></div><div className="mt-6 grid gap-3 md:grid-cols-4">{songs.map((song) => <button key={song.title} onClick={() => setSelectedSong(song)} className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 ${selectedSong.title === song.title ? "border-[#17212b] bg-[#17212b] text-white" : "border-[#eadfd5] bg-white"}`}><span className="mb-3 block h-2 w-12 rounded-full" style={{ background: song.color }} /><p className={`text-xs font-bold uppercase tracking-wide ${selectedSong.title === song.title ? "text-[#ffd59a]" : "text-[#a16d5c]"}`}>{song.level}</p><p className="mt-2 font-display text-lg font-bold">{song.title}</p><p className={`mt-1 text-xs ${selectedSong.title === song.title ? "text-[#cbd5d5]" : "text-[#788486]"}`}>{song.artist}</p></button>)}</div><div className="mt-6 grid gap-5 lg:grid-cols-[1.05fr_.95fr]"><div className="rounded-3xl bg-[#17212b] p-5 text-white sm:p-6"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.17em] text-[#ffd59a]">Canción seleccionada</p><h3 className="mt-2 font-display text-2xl font-bold">{selectedSong.title}</h3><p className="mt-1 text-sm text-[#b8c5c5]">{selectedSong.artist} · {selectedSong.level}</p></div><a href={selectedSong.url} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#ffd59a] px-3 py-2 text-xs font-black text-[#17212b] hover:bg-[#ffe7bd]"><Play className="h-3.5 w-3.5 fill-current" /> Escuchar <ExternalLink className="h-3 w-3" /></a></div><p className="mt-5 text-sm leading-6 text-[#d1dada]">{selectedSong.description}</p><div className="mt-5 grid gap-2 sm:grid-cols-3">{selectedSong.vocabulary.map(([word, meaning, pronunciation]) => <button key={word} onClick={() => speakPractice(word)} className="rounded-2xl bg-white/10 p-3 text-left hover:bg-white/15"><span className="block font-display text-base font-bold">{word}</span><span className="mt-1 block text-xs text-[#cbd5d5]">{meaning}</span><span className="mt-2 block text-[11px] font-bold text-[#ffd59a]">{pronunciation}</span></button>)}</div></div><div className="rounded-3xl border border-[#eadfd5] bg-white p-5 sm:p-6"><p className="text-xs font-bold uppercase tracking-[.17em] text-[#a16d5c]">Frase de práctica</p><p className="mt-3 font-display text-2xl font-bold text-[#17212b]">{selectedSong.practiceLine[0]}</p><p className="mt-2 text-sm text-[#788486]">{selectedSong.practiceLine[1]}</p><p className="mt-3 rounded-xl bg-[#fff0dc] px-3 py-2 text-sm font-bold text-[#a9614c]">Pronuncia: {selectedSong.practiceLine[2]}</p><div className="mt-4 flex flex-wrap items-center gap-2"><span className="text-xs font-bold uppercase tracking-wide text-[#8e9a96]">Voz masculina</span>{([['slow', 'Lenta'], ['medium', 'Intermedia'], ['fast', 'Rápida']] as const).map(([value, label]) => <button key={value} onClick={() => setSpeechSpeed(value)} className={`rounded-full px-3 py-1.5 text-xs font-black ${speechSpeed === value ? "bg-[#17212b] text-[#ffe2b4]" : "border border-[#dce3db] bg-white text-[#657477]"}`}>{label}</button>)}</div><div className="mt-5 flex flex-wrap gap-2"><Button onClick={() => speakPractice(selectedSong.practiceLine[0])} variant="outline" className="rounded-xl border-[#dce3db] bg-white font-bold"><Volume2 className="mr-2 h-4 w-4 text-[#de765e]" /> Escuchar frase</Button><Button onClick={() => { const phrase = selectedSong.practiceLine[0]; setVoiceTarget(phrase); setVoiceMessage("Frase musical seleccionada. Te escucho…"); startVoiceCheck(phrase); }} className="rounded-xl bg-[#6fa9a2] font-bold hover:bg-[#5f9b96]"><Mic className="mr-2 h-4 w-4" /> Preparar micrófono</Button></div><p className="mt-4 text-xs leading-5 text-[#8a9693]">{selectedSong.publicDomain ? "Esta canción tradicional es de dominio público; puedes buscar su letra completa en una fuente autorizada." : "Para ver la letra completa y su traducción, abre una fuente autorizada de letras. Aquí practicamos vocabulario y frases cortas propias del curso."}</p></div></div></section>
+<!-- ========================================== -->
+<!-- 🚀 PREMIUM 3D ANIMATIONS UPGRADE -->
+<!-- ========================================== -->
+<style id="premium-3d-upgrade">
+:root { --ease-3d: cubic-bezier(0.22, 1, 0.36, 1); }
 
-        <section className="mt-6 rounded-[2rem] border border-[#dfe8e5] bg-[#f3f8f5] p-5 sm:p-7"><div className="flex items-start gap-3"><Music2 className="mt-1 h-5 w-5 shrink-0 text-[#5f9b96]" /><div><p className="text-xs font-bold uppercase tracking-[.17em] text-[#5f9b96]">Mi fragmento autorizado</p><h3 className="mt-2 font-display text-2xl font-bold text-[#17212b]">Practica una línea que tengas permitida</h3><p className="mt-2 max-w-3xl text-sm leading-6 text-[#647474]">Puedes pegar una línea breve que hayas obtenido legalmente y escribir tú mismo su significado y pronunciación. El contenido se queda en esta página, no se guarda ni se envía a la IA. Para letras comerciales completas, usa la fuente autorizada del enlace de la canción.</p></div></div><div className="mt-5 grid gap-3 md:grid-cols-3"><textarea value={customSongLine} onChange={(event) => setCustomSongLine(event.target.value)} placeholder="Línea en inglés" aria-label="Línea autorizada en inglés" className="min-h-24 rounded-2xl border border-[#d9e5e0] bg-white p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#6fa9a2]" /><textarea value={customSongMeaning} onChange={(event) => setCustomSongMeaning(event.target.value)} placeholder="Mi traducción al español" aria-label="Traducción propia" className="min-h-24 rounded-2xl border border-[#d9e5e0] bg-white p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#6fa9a2]" /><textarea value={customSongPronunciation} onChange={(event) => setCustomSongPronunciation(event.target.value)} placeholder="Mi pronunciación hispana" aria-label="Pronunciación hispana propia" className="min-h-24 rounded-2xl border border-[#d9e5e0] bg-white p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#6fa9a2]" /></div>{(languageHelpLoading || languageHelp) && <div className="mt-4 rounded-2xl border border-[#cfe2df] bg-white p-4"><p className="text-xs font-bold uppercase tracking-[.17em] text-[#5f9b96]">Resultado automático</p>{languageHelpLoading ? <p className="mt-2 text-sm font-semibold text-[#7b8b88]">Estoy traduciendo y preparando la pronunciación…</p> : languageHelp && <div className="mt-2 grid gap-3 sm:grid-cols-3"><div><p className="text-[10px] font-bold uppercase text-[#9aa6a3]">Español</p><p className="mt-1 text-sm font-bold text-[#34474c]">{languageHelp.translation}</p></div><div><p className="text-[10px] font-bold uppercase text-[#9aa6a3]">Pronunciación hispana</p><p className="mt-1 text-sm font-bold text-[#a9614c]">{languageHelp.pronunciation}</p></div><div><p className="text-[10px] font-bold uppercase text-[#9aa6a3]">Consejo</p><p className="mt-1 text-sm text-[#68777a]">{languageHelp.tip}</p></div></div>}</div>}<div className="mt-4 flex flex-wrap items-center gap-2"><Button disabled={!customSongLine.trim()} onClick={() => { const phrase = customSongLine.trim(); setVoiceTarget(phrase); speakPractice(phrase); setVoiceMessage("Escucha el modelo y después pulsa Practicar con micrófono."); }} className="rounded-xl bg-[#17212b] font-bold text-[#ffe2b4] hover:bg-[#273743]"><Volume2 className="mr-2 h-4 w-4" /> Escuchar mi fragmento</Button><Button disabled={!customSongLine.trim()} onClick={listening ? () => recognitionRef.current?.stop() : () => startVoiceCheck(customSongLine.trim())} className={`rounded-xl font-bold ${listening ? "bg-[#de765e] hover:bg-[#c8654f]" : "bg-[#6fa9a2] hover:bg-[#5f9b96]"}`}><Mic className="mr-2 h-4 w-4" /> {listening ? "Detener micrófono" : "Practicar con micrófono"}</Button><Button disabled={!customSongLine.trim()} onClick={() => { if (recording) { stopRecording(); } else { setVoiceTarget(customSongLine.trim()); beginRecording(); } }} className={`rounded-xl font-bold ${recording ? "bg-[#de765e] hover:bg-[#c8654f]" : "border border-[#dce3db] bg-white text-[#526267] hover:bg-[#f7faf7]"}`}>{recording ? <><Square className="mr-2 h-4 w-4 fill-current" /> Detener y guardar voz</> : <><Waves className="mr-2 h-4 w-4" /> Grabar mi voz</>}</Button>{recordedUrl && <audio controls src={recordedUrl} aria-label="Reproducir mi voz" className="h-10 w-full sm:w-56" />}{customSongLine && <span className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-[#5f7772]">{customSongMeaning || "Agrega tu traducción"}{customSongPronunciation ? ` · ${customSongPronunciation}` : ""}</span>}</div><p className="mt-3 text-xs leading-5 text-[#7c8b88]">Tu grabación queda temporalmente en este dispositivo para que puedas escucharte. Si escribes otra frase, vuelve a grabarla.</p></section>
-      </main>
+/* 1. Contenedores con perspectiva 3D */
+.hero, .options-grid, .process-grid { perspective: 1200px; }
+
+/* 2. Hero Parallax 3D Layers */
+.hero-grid > div { transform-style: preserve-3d; }
+.hero h1 { transform: translateZ(40px); transition: transform 0.1s ease-out; }
+.hero-lead { transform: translateZ(20px); transition: transform 0.1s ease-out; }
+.hero-actions { transform: translateZ(30px); transition: transform 0.1s ease-out; }
+
+/* 3. Cards con Tilt 3D + Glare (Brillo dinámico) */
+.option, .step {
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+}
+.option::after, .step::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: inherit;
+}
+.option:hover::after, .step:hover::after { opacity: 1; }
+
+/* Contenido interno con profundidad */
+.option-icon, .step-no, .option h3, .step h3 {
+  transform: translateZ(20px);
+  transition: transform 0.4s var(--ease-3d);
+}
+.option:hover .option-icon, .step:hover .step-no {
+  transform: translateZ(40px) scale(1.1);
+}
+
+/* 4. Scroll Reveal Cinemático 3D */
+.reveal {
+  opacity: 0;
+  transform: perspective(1000px) translateY(60px) rotateX(6deg) scale(0.98);
+  transition: opacity 0.9s var(--ease-3d), transform 0.9s var(--ease-3d);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: perspective(1000px) translateY(0) rotateX(0deg) scale(1);
+}
+
+/* 5. Botones Magnéticos 3D */
+.btn-3d-magnetic {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.2s var(--ease-3d), box-shadow 0.2s ease;
+}
+.btn-3d-magnetic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  transform: translateZ(1px);
+}
+.btn-3d-magnetic:hover::before { opacity: 1; }
+
+/* 6. Marco de Foto 3D */
+.proof-image {
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--ease-3d);
+}
+.proof-image:hover {
+  transform: perspective(1000px) rotateY(-4deg) rotateX(3deg) scale(1.02);
+}
+.proof-image img {
+  transform: translateZ(30px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* 7. Badge con brillo animado */
+.option-badge {
+  position: relative;
+  overflow: hidden;
+}
+.option-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  animation: badgeShine 3s infinite;
+}
+@keyframes badgeShine {
+  0%, 100% { left: -100%; }
+  50% { left: 150%; }
+}
+</style>
+
+</head>
+<body>
+<header class="site-nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#inicio">Hamilton Granillo <span>Distribuidor Independiente</span></a>
+    <nav class="nav-links" aria-label="Navegación principal"><a href="#opciones">Opciones</a><a href="#como-funciona">Cómo funciona</a><a href="#preguntas">Preguntas</a><a class="btn btn-primary" href="#registro">Quiero orientación</a></nav>
+    <button class="mobile-nav" id="mobileNavToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Navegación móvil" hidden>
+    <a href="#opciones">Opciones</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#preguntas">Preguntas frecuentes</a>
+    <a class="mobile-menu-cta" href="#registro">Quiero orientación <span>→</span></a>
+  </nav>
+</header>
+<main>
+<section class="hero" id="inicio"><div class="wrap hero-grid"><div><div class="eyebrow">Acompañamiento personal para tu registro</div><h1>Conoce Omnilife.<br><em>Decide con claridad.</em></h1><p class="hero-lead">Descubre cómo funciona, conoce las distintas formas de participar y recibe acompañamiento personal para explorar la opción que mejor se adapta a tu objetivo.</p><div class="hero-actions"><a class="btn btn-primary" href="#opciones">Conocer mis opciones <span>↓</span></a><a class="btn btn-light" href="https://wa.me/593968107948?text=Hola%20Hamilton%2C%20quiero%20recibir%20orientaci%C3%B3n%20sobre%20Omnilife." target="_blank" rel="noopener">Hablar conmigo por WhatsApp</a></div><div class="trust"><span>Sin presión</span><span>Explicación clara</span><span>Registro en portal oficial</span></div></div></div></section>
+<section class="choice-band reveal"><div class="wrap choice-band-inner"><div><strong>¿No sabes cuál elegir?</strong><p>Cuéntame qué buscas y te recomiendo una opción según tu objetivo.</p></div><a class="btn" href="#registro" data-mode="recomendacion">Quiero una recomendación</a></div></section>
+<section class="video-section" id="video">
+  <div class="wrap video-wrap">
+    <div class="section-head">
+      <div class="eyebrow">Mira antes de decidir</div>
+      <h2>Así se vive un Día Morado en Omnilife.</h2>
+      <p>Conoce experiencias y resultados compartidos por personas que decidieron cambiar su estilo de vida y explorar nuevas oportunidades con Omnilife.</p>
     </div>
-  );
+    <div class="video-box video-lazy" id="videoBox" role="button" tabindex="0" aria-label="Reproducir video de Día Morado" onclick="loadGuideVideo()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();loadGuideVideo()}">
+      <img src="https://i.ytimg.com/vi/bl1jFjnwoXE/maxresdefault.jpg"
+        alt="Resultados Omnilife - Día Morado" loading="lazy" width="1280" height="720">
+      <div class="video-overlay">
+        <button class="video-play" type="button" aria-label="Reproducir video de Día Morado" onclick="event.stopPropagation();loadGuideVideo()">▶</button>
+        <span>Ver video</span>
+      </div>
+    </div>
+    <div class="video-meta">
+      <span><strong>RESULTADOS OMNILIFE · DÍA MORADO</strong></span>
+      <span>Historias, experiencias y una mirada más cercana a la comunidad.</span>
+    </div>
+  </div>
+</section><section class="section photo-section reveal"><div class="wrap proof-grid"><div class="proof-image"><img src="Hamilton.jpg" alt="Hamilton Granillo brinda asesoría personalizada" loading="lazy" width="1000" height="1000"></div><div class="proof-copy"><div class="eyebrow">Por qué contar conmigo</div><h2>Una orientación clara para tomar mejores decisiones.</h2><p class="quote">“Conoce tus opciones, resuelve tus dudas y recibe acompañamiento personalizado durante tu proceso.”</p><div class="proof-points"><div><b>✓ Atención personal</b><span>Hablas directamente conmigo y recibes orientación según tus objetivos.</span></div><div><b>✓ Información transparente</b><span>Conoce las opciones, condiciones y pasos antes de tomar una decisión.</span></div><div><b>✓ Registro oficial</b><span>El registro se realiza en el sitio oficial de Omnilife.</span></div></div><a class="btn btn-primary" href="#registro">Quiero conversar contigo</a></div></div></section>
+<section class="section options reveal" id="opciones"><div class="wrap"><div class="section-head"><div class="eyebrow">Primero, elige tu objetivo</div><h2>Tres caminos. Una decisión sencilla.</h2><p>No necesitas saberlo todo antes de comenzar. Lee la opción que más se parece a lo que quieres hacer hoy.</p></div><div class="options-grid"><article class="option reveal reveal-delay-1"><div class="option-icon">C</div><h3>Cliente Admirable</h3><div class="price">Registro gratuito</div><p>Para comprar productos para ti, tu familia o probar la línea sin iniciar un negocio.</p><ul><li>Sin costo de registro</li><li>Compra a precio oficial</li><li>Sin compras mensuales forzosas</li></ul><button class="btn btn-light choose-mode" data-mode="cliente">Quiero esta opción</button></article><article class="option reveal reveal-delay-2"><div class="option-icon">A</div><h3>Afiliación</h3><div class="price">Descuentos desde 25%</div><p>Para comprar con descuento y dejar abierta la posibilidad de emprender más adelante.</p><ul><li>Kit de afiliación según país</li><li>Descuento desde el inicio</li><li>Acompañamiento y capacitación</li></ul><button class="btn btn-light choose-mode" data-mode="afiliacion">Quiero esta opción</button></article><article class="option featured reveal reveal-delay-3"><div class="option-badge">Más elegida</div><div class="option-icon">1K</div><h3>Kit Emprendedor</h3><div class="price">1.000 puntos · desde 30%</div><p>Para quienes quieren comenzar con más volumen y conocer una ruta de emprendimiento.</p><ul><li>Productos según tus objetivos</li><li>Mayor volumen inicial</li><li>Recomendación personalizada</li></ul><button class="btn btn-primary choose-mode" data-mode="emprendedor">Quiero información</button></article></div><p class="small-note">Los precios, descuentos, kits y condiciones pueden variar según el país y las reglas vigentes. Te ayudo a confirmarlos antes de registrarte.</p></div></section>
+<section class="section process reveal" id="como-funciona"><div class="wrap"><div class="section-head"><div class="eyebrow">Así de simple</div><h2>Yo te acompaño en cada paso.</h2><p>No tienes que descifrar el proceso por tu cuenta.</p></div><div class="process-grid"><article class="step reveal reveal-delay-1"><div class="step-no">01</div><h3>Me cuentas tu objetivo</h3><p>¿Quieres comprar, ahorrar en tus productos o explorar un emprendimiento? Te escucho sin presión.</p></article><article class="step reveal reveal-delay-2"><div class="step-no">02</div><h3>Elegimos la ruta</h3><p>Te explico costos, descuentos y condiciones de cada opción para que tomes una decisión informada.</p></article><article class="step reveal reveal-delay-3"><div class="step-no">03</div><h3>Te guío en el registro</h3><p>Te acompaño por WhatsApp o Zoom mientras completas el proceso en el portal oficial.</p></article></div></div></section>
+
+<section class="section form-section reveal" id="registro"><div class="wrap form-grid"><div class="form-copy"><div class="eyebrow">El siguiente paso</div><h2>Cuéntame qué necesitas y te respondo personalmente.</h2><p>Déjame tu nombre y ciudad. Al enviar, se abrirá WhatsApp con un mensaje preparado para que podamos continuar.</p><div class="mini-guarantee">Tu consulta no te obliga a comprar ni a afiliarte. Primero resolvemos tus dudas; después tú decides.</div></div><form class="lead-form" id="leadForm"><div class="mode-tabs" role="tablist" aria-label="Elige tu interés"><button type="button" class="active" data-mode="recomendacion">No sé aún</button><button type="button" data-mode="cliente">Comprar</button><button type="button" data-mode="afiliacion">Descuento</button></div><div class="field"><label for="name">¿Cómo te llamas?</label><input id="name" name="name" autocomplete="name" required placeholder="Tu nombre"></div><div class="field"><label for="city">¿En qué ciudad y país estás?</label><input id="city" name="city" autocomplete="address-level2" required placeholder="Ej. Guayaquil, Ecuador"></div><div class="field"><label for="message">¿Qué quieres saber? <span style="font-weight:400;color:var(--muted)">(opcional)</span></label><textarea id="message" name="message" placeholder="Cuéntame si quieres comprar, tener descuento o emprender..."></textarea></div><label class="consent"><input id="consent" type="checkbox" required><span>Acepto que mis datos se usen para responder mi solicitud por WhatsApp. <a href="https://hamiltonnetworker.com/politica-privacidad.html" target="_blank" rel="noopener">Leer privacidad</a>.</span></label><button class="btn btn-primary form-submit" type="submit">Abrir WhatsApp y recibir orientación →</button><p class="form-status" id="formStatus" aria-live="polite"></p></form></div></section>
+<section class="section reveal" id="preguntas">
+  <div class="wrap faq">
+    <div class="section-head">
+      <div class="eyebrow">Antes de escribir</div>
+      <h2>Preguntas frecuentes</h2>
+      <p class="faq-intro">Resuelve las dudas más comunes antes de elegir una opción. Si tu pregunta no aparece aquí, puedes escribirme directamente.</p>
+    </div>
+
+    <div class="faq-list">
+      <details>
+        <summary><span class="faq-number">01</span><span class="faq-question">¿Qué es Omnilife y cómo puedo empezar?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>Omnilife cuenta con diferentes modalidades para quienes desean comprar productos, acceder a descuentos o conocer una opción de emprendimiento. Primero revisamos lo que buscas y después te explico el proceso correspondiente.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">02</span><span class="faq-question">¿Cuál es la diferencia entre Cliente Admirable, Afiliación y Kit Emprendedor?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>Cliente Admirable está orientado a comprar productos; la Afiliación permite acceder a descuentos; y el Kit Emprendedor está pensado para quienes quieren conocer una alternativa de emprendimiento con mayor volumen inicial. Te explico cada opción antes de que decidas.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">03</span><span class="faq-question">¿El registro como Cliente Admirable tiene costo?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>El registro como Cliente Admirable es sin costo. Para adquirir tus productos en una CEDI o realizar compras en línea, primero debes registrarte como Cliente Admirable. Si quieres, te guío paso a paso para realizar tu registro y comenzar a comprar.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">04</span><span class="faq-question">¿Tengo que comprar productos todos los meses?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>No necesariamente. Puedes comprar según tus necesidades. Las condiciones específicas pueden depender de la modalidad, el país y las condiciones comerciales vigentes, por eso te explico lo que aplica antes de registrarte.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">05</span><span class="faq-question">¿Qué descuento puedo obtener?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>Los descuentos pueden variar según la modalidad, el país y la vigencia comercial. En la página mostramos opciones con descuentos desde el 25% y, para el Kit Emprendedor, desde el 30%. Te ayudo a confirmar el porcentaje que corresponde a tu caso.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">06</span><span class="faq-question">¿Qué incluye el Kit Emprendedor de 1.000 puntos?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>La composición y las condiciones del kit pueden variar según el país y la vigencia comercial. Antes de registrarte te explico qué aplica actualmente y te indico dónde puedes verificar la información oficial.</p></div>
+      </details>
+
+      <details>
+        <summary><span class="faq-number">07</span><span class="faq-question">¿Puedo empezar solo para comprar productos?</span><span class="faq-icon">+</span></summary>
+        <div class="faq-answer"><p>Sí. La opción de Cliente Admirable está orientada a quienes desean comprar productos. Si buscas acceder a descuentos o conocer una alternativa de emprendimiento, también puedo explicarte las demás opciones.</p></div>
+      </details>
+    </div>
+
+    <div class="faq-cta">
+      <div><strong>¿No encontraste tu pregunta?</strong><span>Escríbeme y revisamos tu caso paso a paso.</span></div>
+      <a class="btn btn-primary" href="https://wa.me/593968107948?text=Hola%20Hamilton%2C%20tengo%20una%20pregunta%20sobre%20Omnilife." target="_blank" rel="noopener" onclick="trackEvent('faq_whatsapp_click')">Quiero conversar contigo →</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <div class="footer-mark">HG</div>
+      <div>
+        <strong>Hamilton Granillo</strong>
+        <p>Distribuidor Independiente Omnilife</p>
+      </div>
+    </div>
+
+    <div class="footer-grid">
+      <div class="footer-col">
+        <span class="footer-label">Explora</span>
+        <a href="#opciones">Mis opciones</a>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#preguntas">Preguntas frecuentes</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-label">Orientación</span>
+        <a href="#registro">Quiero orientación</a>
+        <a href="https://wa.me/593968107948?text=Hola%20Hamilton%2C%20quiero%20recibir%20orientaci%C3%B3n%20sobre%20Omnilife." target="_blank" rel="noopener">Hablar por WhatsApp</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-label">Información</span>
+        <a href="https://hamiltonnetworker.com/politica-privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a>
+        <a href="https://hamiltonnetworker.com/politica-cookies.html" target="_blank" rel="noopener">Política de cookies</a>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <p class="disclaimer">Este sitio es independiente y no es el sitio oficial de Omnilife. Los precios, descuentos, kits y condiciones pueden cambiar según el país y la vigencia comercial. El código de presentador se comparte durante la orientación.</p>
+      <p class="footer-copy">© 2026 Hamilton Granillo · Información y orientación personalizada</p>
+    </div>
+  </div>
+</footer>
+<div class="cookie-notice" id="cookieNotice" role="dialog" aria-labelledby="cookieTitle" aria-describedby="cookieText" hidden><div><strong id="cookieTitle">Privacidad y medición</strong><p id="cookieText">Usamos herramientas de medición para saber qué contenido funciona y mejorar esta página. Solo se activan si las aceptas. <a href="https://hamiltonnetworker.com/politica-privacidad.html" target="_blank" rel="noopener">Leer privacidad</a>.</p></div><div class="cookie-actions"><button class="cookie-reject" type="button" onclick="setTrackingConsent('necessary')">Solo necesarias</button><button class="cookie-accept" type="button" onclick="setTrackingConsent('analytics')">Aceptar medición</button></div></div>
+<a class="float-wa" href="https://wa.me/593968107948?text=Hola%20Hamilton%2C%20tengo%20una%20duda%20sobre%20Omnilife%20y%20quiero%20recibir%20orientaci%C3%B3n." target="_blank" rel="noopener" aria-label="Pedir orientación por WhatsApp" onclick="trackEvent('floating_whatsapp_click')"><span>¿Tienes dudas? Te ayudo</span></a><div class="toast" id="toast" role="status"></div>
+
+<script>
+const META_PIXEL_ID='1330108458187229';
+const GTM_ID='GTM-NMKKFPHN';
+const GA4_ID='';
+function loadMetaPixel(){if(window.__metaLoaded)return;window.__metaLoaded=true;!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=true;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=true;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
+function loadGtm(){if(window.__gtmLoaded)return;window.__gtmLoaded=true;window.dataLayer=window.dataLayer||[];window.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(GTM_ID);document.head.appendChild(s)}
+function loadGa4(){if(!GA4_ID||window.__ga4Loaded)return;window.__ga4Loaded=true;window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date);gtag('config',GA4_ID);const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(GA4_ID);document.head.appendChild(s)}
+function setTrackingConsent(value){localStorage.setItem('hamilton_tracking_consent',value);document.querySelector('#cookieNotice').hidden=true;if(value==='analytics'){loadMetaPixel();loadGtm();loadGa4();trackEvent('tracking_consent', {consent:'analytics'})}}
+function trackEvent(name,params={}){
+  window.dataLayer=window.dataLayer||[];
+  window.dataLayer.push({event:name,...params});
+  if(window.fbq)fbq('trackCustom',name,params);
 }
+function trackMetaStandard(name,params={}){
+  if(window.fbq)fbq('track',name,params);
+}
+function loadGuideVideo(){
+  const box=document.querySelector('#videoBox');
+  if(!box || box.dataset.loaded==='1') return;
+  box.dataset.loaded='1';
+  box.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/bl1jFjnwoXE?autoplay=1&rel=0&modestbranding=1&enablejsapi=1&playsinline=1" title="Resultados Omnilife - Día Morado" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+  trackEvent('video_play',{video:'dia_morado_omnilife'});
+trackMetaStandard('ViewContent',{
+  content_name:'Video Día Morado Omnilife',
+  content_category:'Video'
+});
+}
+if(localStorage.getItem('hamilton_tracking_consent')==='analytics'){loadMetaPixel();loadGtm();loadGa4()}else if(!localStorage.getItem('hamilton_tracking_consent'))document.querySelector('#cookieNotice').hidden=false;
+
+let viewContentSent=false;
+function sendViewContent(){
+  if(viewContentSent || !window.fbq) return;
+  viewContentSent=true;
+  trackMetaStandard('ViewContent',{
+    content_name:'Landing Omnilife Hamilton Granillo',
+    content_category:'Omnilife'
+  });
+}
+const videoSection=document.querySelector('#video');
+if(videoSection && 'IntersectionObserver' in window){
+  const contentObserver=new IntersectionObserver(entries=>{
+    if(entries.some(e=>e.isIntersecting)){
+      sendViewContent();
+      contentObserver.disconnect();
+    }
+  },{threshold:0.25});
+  contentObserver.observe(videoSection);
+}else{
+  sendViewContent();
+}
+</script>
+<script>
+const PHONE='593968107948';let selectedMode='recomendacion';
+const labels={recomendacion:'Todavía no sé cuál opción me conviene',cliente:'Cliente Admirable',afiliacion:'Afiliación con descuento',emprendedor:'Kit Emprendedor de 1.000 puntos'};
+function setMode(mode){selectedMode=mode;document.querySelectorAll('[data-mode]').forEach(el=>{if(el.closest('.mode-tabs'))el.classList.toggle('active',el.dataset.mode===mode)});const msg=document.querySelector('#message');if(msg)msg.placeholder=mode==='cliente'?'Ej. Quiero comprar para mi consumo y saber cómo registrarme...':mode==='afiliacion'?'Ej. Quiero conocer el costo y el descuento de la afiliación...':mode==='emprendedor'?'Ej. Quiero saber qué incluye el Kit Emprendedor...':'Cuéntame si quieres comprar, tener descuento o emprender...';document.querySelector('#registro')?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>document.querySelector('#name')?.focus(),450)}
+document.querySelectorAll('.choose-mode,[data-mode]').forEach(el=>el.addEventListener('click',()=>setMode(el.dataset.mode)));
+document.querySelector('#leadForm').addEventListener('submit',e=>{e.preventDefault();const name=document.querySelector('#name').value.trim(),city=document.querySelector('#city').value.trim(),message=document.querySelector('#message').value.trim();if(!document.querySelector('#consent').checked){document.querySelector('#formStatus').textContent='Acepta el aviso de privacidad para continuar.';return}const text=`Hola Hamilton 👋\n\n*Quiero orientación sobre:* ${labels[selectedMode]}\n*Nombre:* ${name}\n*Ciudad y país:* ${city}\n*Mensaje:* ${message||'Quiero conocer mis opciones y saber cómo continuar.'}`;trackEvent('lead_whatsapp',{
+  mode:selectedMode,
+  channel:'whatsapp'
+});
+trackMetaStandard('Lead',{
+  content_name:'Solicitud de orientación Omnilife',
+  content_category:'Omnilife',
+  lead_type:selectedMode
+});
+trackMetaStandard('Contact',{
+  content_name:'Contacto por WhatsApp',
+  content_category:'Omnilife',
+  contact_method:'whatsapp'
+});
+window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`,'_blank','noopener');
+document.querySelector('#formStatus').textContent='Se abrió WhatsApp. Si no aparece, revisa tus ventanas bloqueadas.'});
+const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');revealObserver.unobserve(entry.target)}}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal,.proof-copy,.form-copy,.faq details').forEach(el=>{el.classList.add('reveal');revealObserver.observe(el)});
+</script>
+
+<script>
+(function(){
+  const hero=document.querySelector('.hero');
+  if(!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if(window.matchMedia('(hover: hover) and (pointer: fine)').matches){
+    hero.addEventListener('pointermove', function(e){
+      const r=hero.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5;
+      const y=(e.clientY-r.top)/r.height-.5;
+      hero.style.setProperty('--mx', (x*10)+'px');
+      hero.style.setProperty('--my', (y*8)+'px');
+    });
+    hero.style.setProperty('--mx','0px');
+    hero.style.setProperty('--my','0px');
+  }
+})();
+</script>
+<style>
+.hero:after{
+  transform:translate3d(var(--mx,0),var(--my,0),0);
+  transition:transform .25s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const optionsCta=document.querySelector('a[href="#opciones"]');
+  const optionsSection=document.getElementById('opciones');
+  if(optionsCta && optionsSection){
+    optionsCta.addEventListener('click',function(e){
+      e.preventDefault();
+      optionsSection.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const destinations = {
+    '#registro': document.getElementById('registro'),
+    '#como-funciona': document.getElementById('como-funciona'),
+    '#preguntas': document.getElementById('preguntas')
+  };
+
+  document.querySelectorAll('a[href="#registro"], a[href="#como-funciona"], a[href="#preguntas"]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      const target = destinations[link.getAttribute('href')];
+      if(!target) return;
+      e.preventDefault();
+      const header = document.querySelector('.site-nav');
+      const offset = header ? header.offsetHeight + 12 : 12;
+      const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({top: top, behavior:'smooth'});
+    });
+  });
+});
+</script>
+
+<script id="faq-accordion">
+document.querySelectorAll('.faq-list details').forEach(item=>{
+  item.addEventListener('toggle',()=>{
+    if(!item.open) return;
+    document.querySelectorAll('.faq-list details[open]').forEach(other=>{
+      if(other!==item) other.removeAttribute('open');
+    });
+  });
+});
+</script>
+
+<script id="mobile-menu-script">
+(function(){
+  const toggle=document.getElementById('mobileNavToggle');
+  const menu=document.getElementById('mobileMenu');
+  if(!toggle||!menu)return;
+  const close=()=>{menu.hidden=true;toggle.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú')};
+  const open=()=>{menu.hidden=false;toggle.classList.add('is-open');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Cerrar menú')};
+  toggle.addEventListener('click',()=>menu.hidden?open():close());
+  menu.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>close()));
+  document.addEventListener('click',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!toggle.contains(e.target))close()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  window.addEventListener('resize',()=>{if(window.innerWidth>850)close()});
+})();
+</script>
+
+<!-- ========================================== -->
+<!-- 🚀 PREMIUM 3D INTERACTIVITY SCRIPT -->
+<!-- ========================================== -->
+<script id="premium-3d-js">
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Hero 3D Parallax (Solo en desktop)
+  const hero = document.querySelector('.hero');
+  if (hero && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const heroTitle = hero.querySelector('h1');
+    const heroLead = hero.querySelector('.hero-lead');
+    const heroActions = hero.querySelector('.hero-actions');
+    
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      
+      if (heroTitle) heroTitle.style.transform = `translateZ(40px) translate(${x * 20}px, ${y * 20}px)`;
+      if (heroLead) heroLead.style.transform = `translateZ(20px) translate(${x * 10}px, ${y * 10}px)`;
+      if (heroActions) heroActions.style.transform = `translateZ(30px) translate(${x * 15}px, ${y * 15}px)`;
+    });
+    
+    hero.addEventListener('mouseleave', () => {
+      if (heroTitle) heroTitle.style.transform = 'translateZ(40px) translate(0, 0)';
+      if (heroLead) heroLead.style.transform = 'translateZ(20px) translate(0, 0)';
+      if (heroActions) heroActions.style.transform = 'translateZ(30px) translate(0, 0)';
+    });
+  }
+
+  // 2. 3D Tilt Cards (Opciones y Pasos)
+  const tiltElements = document.querySelectorAll('.option, .step');
+  tiltElements.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * -5; // Máx 5 grados
+      const rotateY = ((x - centerX) / centerX) * 5;
+      
+      el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      el.style.setProperty('--mouse-x', `${x}px`);
+      el.style.setProperty('--mouse-y', `${y}px`);
+    });
+    
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+  });
+
+  // 3. Botones Magnéticos 3D (Solo en CTAs principales)
+  const magneticBtns = document.querySelectorAll('.hero-actions .btn-primary, .choice-band .btn, .option .btn, .faq-cta .btn');
+  magneticBtns.forEach(btn => {
+    btn.classList.add('btn-3d-magnetic');
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px) translateZ(10px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = 'translate(0, 0) translateZ(0)';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
